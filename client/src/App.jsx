@@ -7,7 +7,7 @@ import Dashboard from './pages/Dashboard'
 import About from './pages/About'
 import Headers from './components/Header'
 import Features from './pages/Features'
-
+import Footer from './components/Footer'
 
 export default function App() {
   return (
@@ -21,6 +21,8 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
       </Routes>
+      <Footer/>
+
     </BrowserRouter>
     
   )
