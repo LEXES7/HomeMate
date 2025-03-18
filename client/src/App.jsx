@@ -3,11 +3,13 @@ import React from 'react'
 import Home from './pages/Home'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
+
 import Dashboard from './pages/Dashboard'
 import About from './pages/About'
 import Headers from './components/Header'
 import Features from './pages/Features'
 import Footer from './components/Footer'
+import PrivateRoute from './components/PrivateRoute'
 
 export default function App() {
   return (
@@ -17,7 +19,9 @@ export default function App() {
         <Route path="/home" element={<Home/>} />
         <Route path="/signin" element={<Signin/>} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<PrivateRoute />} > 
+           <Route path="/dashboard" element={<Dashboard />} />  
+        </Route>
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
       </Routes>
