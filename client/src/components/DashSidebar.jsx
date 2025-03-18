@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 export default function DashSidebar() {
-    const location = useLocation();
+const location = useLocation();
   const [tab, setTab] = useState('');
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -21,12 +21,12 @@ export default function DashSidebar() {
         <Sidebar.Items>
             <Sidebar.ItemGroup>
                 <Link to='/dashboard?tab=profile'>
-                <Sidebar.Item active= {tab === 'profile'} icon={HiUser} label = {"User"} labelColor='dark'>
+                <Sidebar.Item active= {tab === 'profile'} icon={HiUser} label = {"User"} labelColor='dark' as='div'>
                     Profile
                 </Sidebar.Item>
                 </Link>
 
-                <Sidebar.Item  icon={HiArrowSmRight} classname='cursor-pointer' >
+                <Sidebar.Item  icon={HiArrowSmRight} className='cursor-pointer' >
                     Sign Out
                 </Sidebar.Item>
 
