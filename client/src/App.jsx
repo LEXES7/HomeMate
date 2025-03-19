@@ -5,6 +5,7 @@ import Signin from './pages/Signin'
 import Signup from './pages/Signup'
 
 import Dashboard from './pages/Dashboard'
+import AdminDashboard from './pages/AdminDashboard';
 import About from './pages/About'
 import Headers from './components/Header'
 import Features from './pages/Features'
@@ -22,6 +23,11 @@ export default function App() {
         <Route element={<PrivateRoute />} > 
            <Route path="/dashboard" element={<Dashboard />} />  
         </Route>
+
+        <Route element={<PrivateRoute adminOnly={true} />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+        </Route>
+
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
       </Routes>

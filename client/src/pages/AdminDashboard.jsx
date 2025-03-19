@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import UnifiedSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile';
 
-export default function Dashboard() {
+export default function AdminDashboard() {
   const location = useLocation();
   const [tab, setTab] = useState('');
 
