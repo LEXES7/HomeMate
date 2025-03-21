@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@reduxjs/toolkit": "^2.6.1",
     "antd": "^5.24.4",
-    "axios": "^1.8.3",
+    "axios": "^1.8.4",
     "firebase": "^11.4.0",
     "flowbite-react": "^0.10.2",
     "jspdf": "^3.0.1",

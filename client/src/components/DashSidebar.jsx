@@ -37,10 +37,15 @@ export default function UnifiedSidebar() {
 
           {/* User-Specific Items */}
           {!isAdmin && (
-            <Link to="/dashboard?tab=appliances">
-              <Sidebar.Item icon={HiOutlineCalendar}>Appliances</Sidebar.Item>
-            </Link>
-          )}
+  <>
+    <Link to="/dashboard?tab=appliances">
+      <Sidebar.Item icon={HiOutlineCalendar}>Appliances</Sidebar.Item>
+    </Link>
+    <Link to="/dashboard?tab=ai-suggestions">
+      <Sidebar.Item icon={HiOutlineCalendar}>AI Suggestions</Sidebar.Item>
+    </Link>
+  </>
+)}
 
           {/* Admin-Specific Items */}
           {isAdmin && (
