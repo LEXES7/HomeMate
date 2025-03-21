@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sidebar } from 'flowbite-react';
-import { HiArrowSmRight, HiUser, HiOutlineUsers } from 'react-icons/hi';
+import { HiArrowSmRight, HiUser, HiOutlineUsers, HiOutlineCalendar } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
@@ -31,16 +31,21 @@ export default function UnifiedSidebar() {
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           {/* Common Sidebar Items */}
-          <Link to={isAdmin ? '/admin?tab=profile' : '/dashboard?tab=profile'}>
-            <Sidebar.Item
-              icon={HiUser}
-              label={isAdmin ? 'Admin Profile' : 'User Profile'}
-              labelColor="dark"
-              as="div"
-            >
-              Profile
-            </Sidebar.Item>
+          <Link to="/dashboard?tab=profile">
+            <Sidebar.Item icon={HiUser}>Profile</Sidebar.Item>
           </Link>
+
+          {/* User-Specific Items */}
+          {!isAdmin && (
+  <>
+    <Link to="/dashboard?tab=appliances">
+      <Sidebar.Item icon={HiOutlineCalendar}>Appliances</Sidebar.Item>
+    </Link>
+    <Link to="/dashboard?tab=ai-suggestions">
+      <Sidebar.Item icon={HiOutlineCalendar}>AI Suggestions</Sidebar.Item>
+    </Link>
+  </>
+)}
 
           {/* Admin-Specific Items */}
           {isAdmin && (
