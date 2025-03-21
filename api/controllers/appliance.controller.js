@@ -2,7 +2,7 @@ import Appliance from '../models/appliance.model.js';
 
 export const getAppliances = async (req, res) => {
   try {
-    const appliances = await Appliance.find({ userId: req.user.id }); // Filter by userId
+    const appliances = await Appliance.find({ userId: req.user.id }); 
     res.json(appliances);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -10,7 +10,7 @@ export const getAppliances = async (req, res) => {
 };
 
 export const addAppliance = async (req, res) => {
-  const appliance = new Appliance({ ...req.body, userId: req.user.id }); // Associate with userId
+  const appliance = new Appliance({ ...req.body, userId: req.user.id }); 
   try {
     const newAppliance = await appliance.save();
     res.status(201).json(newAppliance);
@@ -35,7 +35,7 @@ export const updateAppliance = async (req, res) => {
 
 export const deleteAppliance = async (req, res) => {
   try {
-    const appliance = await Appliance.findOneAndDelete({ _id: req.params.id, userId: req.user.id }); // Ensure the appliance belongs to the user
+    const appliance = await Appliance.findOneAndDelete({ _id: req.params.id, userId: req.user.id }); 
     if (!appliance) return res.status(404).json({ message: 'Appliance not found' });
     res.json({ message: 'Appliance deleted' });
   } catch (error) {

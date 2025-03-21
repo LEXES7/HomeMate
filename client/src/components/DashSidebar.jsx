@@ -7,8 +7,8 @@ import { signoutSuccess } from '../redux/user/userSlice';
 
 export default function UnifiedSidebar() {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user); // Get user info from Redux
-  const isAdmin = currentUser?.isAdmin; // Check if the user is an admin
+  const { currentUser } = useSelector((state) => state.user); 
+  const isAdmin = currentUser?.isAdmin; 
 
   const handleSignout = async () => {
     try {
@@ -31,27 +31,27 @@ export default function UnifiedSidebar() {
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           {/* Common Sidebar Items */}
-          <Link to="/dashboard?tab=profile">
-            <Sidebar.Item icon={HiUser}>Profile</Sidebar.Item>
-          </Link>
+          <Sidebar.Item icon={HiUser} as={Link} to="/dashboard?tab=profile">
+            Profile
+          </Sidebar.Item>
 
-          {/* User-Specific Items */}
+          {/* User Specific Items */}
           {!isAdmin && (
-  <>
-    <Link to="/dashboard?tab=appliances">
-      <Sidebar.Item icon={HiOutlineCalendar}>Appliances</Sidebar.Item>
-    </Link>
-    <Link to="/dashboard?tab=ai-suggestions">
-      <Sidebar.Item icon={HiOutlineCalendar}>AI Suggestions</Sidebar.Item>
-    </Link>
-  </>
-)}
+            <>
+              <Sidebar.Item icon={HiOutlineCalendar} as={Link} to="/dashboard?tab=appliances">
+                Appliances
+              </Sidebar.Item>
+              <Sidebar.Item icon={HiOutlineCalendar} as={Link} to="/dashboard?tab=ai-suggestions">
+                AI Suggestions
+              </Sidebar.Item>
+            </>
+          )}
 
-          {/* Admin-Specific Items */}
+          {/* Admin Specific Items */}
           {isAdmin && (
-            <Link to="/admin?tab=users">
-              <Sidebar.Item icon={HiOutlineUsers}>Manage Users</Sidebar.Item>
-            </Link>
+            <Sidebar.Item icon={HiOutlineUsers} as={Link} to="/admin?tab=users">
+              Manage Users
+            </Sidebar.Item>
           )}
 
           {/* Sign Out */}
