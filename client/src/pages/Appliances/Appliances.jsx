@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Input, DatePicker } from 'antd';
+import { Button, Modal, Form, Input, DatePicker, message } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 import { Card, Badge, Tooltip, Table } from 'flowbite-react';
 import { HiOutlineBell, HiOutlineCalendar, HiOutlinePlus, HiPencil, HiTrash } from 'react-icons/hi';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 export default function Appliances() {
   const [appliances, setAppliances] = useState([]);
@@ -66,7 +66,7 @@ export default function Appliances() {
         warrantyExpiry: values.warrantyExpiry.format('YYYY-MM-DD'),
         maintenanceSchedule: values.maintenanceSchedule.format('YYYY-MM-DD'),
         value: values.value || 0,
-        pastMaintenance: values.pastMaintenance || [],
+        pastMaintenance: values.pastMaintenance?.map((date) => date.format('YYYY-MM-DD')) || [],
       };
 
       if (currentAppliance) {
@@ -92,42 +92,60 @@ export default function Appliances() {
 
   const generatePDF = () => {
     if (appliances.length === 0) {
-      alert('No appliances available to generate a report.');
+      message.warning('No appliances available to generate a report.');
       return;
     }
 
-    const doc = new jsPDF();
-    doc.text('Appliance Report', 14, 10);
+    try {
+      const doc = new jsPDF();
 
-    const tableColumn = ['Name', 'Type', 'Warranty Expiry', 'Maintenance Schedule', 'Value'];
-    const tableRows = appliances.map((appliance) => [
-      appliance.name,
-      appliance.type,
-      new Date(appliance.warrantyExpiry).toLocaleDateString(),
-      new Date(appliance.maintenanceSchedule).toLocaleDateString(),
-      appliance.value,
-    ]);
+      doc.setFontSize(18);
+      doc.text('HomeMate - Appliance Report', 14, 20);
 
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 20,
-    });
+      doc.setFontSize(11);
+      const today = new Date();
+      doc.text(`Generated on: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`, 14, 30);
 
-    doc.save('appliances_report.pdf');
+      doc.setFontSize(12);
+      doc.text(`Total Appliances: ${appliances.length}`, 14, 40);
+
+      const tableColumn = ['Name', 'Type', 'Warranty Expiry', 'Maintenance Schedule', 'Value ($)', 'Past Maintenance'];
+      const tableRows = appliances.map((appliance) => [
+        appliance.name || 'N/A',
+        appliance.type || 'N/A',
+        appliance.warrantyExpiry ? new Date(appliance.warrantyExpiry).toLocaleDateString() : 'N/A',
+        appliance.maintenanceSchedule ? new Date(appliance.maintenanceSchedule).toLocaleDateString() : 'N/A',
+        appliance.value ? `RS${parseFloat(appliance.value).toFixed(2)}` : 'N/A',
+        appliance.pastMaintenance.length > 0
+          ? appliance.pastMaintenance.map((date) => new Date(date).toLocaleDateString()).join(', ')
+          : 'No records',
+      ]);
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 65,
+        theme: 'grid',
+        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+      });
+
+      doc.save('appliance_report.pdf');
+      message.success('PDF report generated successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      message.error('Failed to generate PDF report. Please try again.');
+    }
   };
 
   const totalAppliances = appliances.length;
   const upcomingMaintenance = appliances.filter(appliance => new Date(appliance.maintenanceSchedule) > new Date()).length;
   const importantMaintenance = appliances.filter(appliance => new Date(appliance.maintenanceSchedule) <= new Date()).length;
 
-  const notifications = appliances
-    .filter(appliance => new Date(appliance.maintenanceSchedule) <= new Date())
-    .map(appliance => ({
-      name: appliance.name,
-      type: appliance.type,
-      maintenanceSchedule: new Date(appliance.maintenanceSchedule).toLocaleDateString(),
-    }));
+  // Notifications for expired warranties or missed maintenance
+  const notifications = appliances.filter(
+    (appliance) =>
+      new Date(appliance.warrantyExpiry) <= new Date() || new Date(appliance.maintenanceSchedule) <= new Date()
+  );
 
   return (
     <div className="p-6">
@@ -147,13 +165,14 @@ export default function Appliances() {
         </Card>
         <Card onClick={() => setIsNotificationModalVisible(true)} className="cursor-pointer">
           <h5 className="text-lg font-bold">Notifications</h5>
-          <Tooltip content="You have important maintenance tasks">
+          <Tooltip content="You have important notifications">
             <Badge color="info" icon={HiOutlineBell}>
-              {importantMaintenance}
+              {notifications.length}
             </Badge>
           </Tooltip>
         </Card>
       </div>
+
       <div className="flex justify-between items-center mb-4">
         <Button
           type="primary"
@@ -172,6 +191,8 @@ export default function Appliances() {
           <Table.HeadCell>Type</Table.HeadCell>
           <Table.HeadCell>Warranty Expiry</Table.HeadCell>
           <Table.HeadCell>Maintenance Schedule</Table.HeadCell>
+          <Table.HeadCell>Value (RS)</Table.HeadCell>
+          <Table.HeadCell>Past Maintenance</Table.HeadCell>
           <Table.HeadCell>Actions</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
@@ -183,6 +204,16 @@ export default function Appliances() {
               <Table.Cell>{appliance.type}</Table.Cell>
               <Table.Cell>{new Date(appliance.warrantyExpiry).toLocaleDateString()}</Table.Cell>
               <Table.Cell>{new Date(appliance.maintenanceSchedule).toLocaleDateString()}</Table.Cell>
+              <Table.Cell>RS.{appliance.value.toFixed(2)}</Table.Cell>
+              <Table.Cell>
+                {appliance.pastMaintenance.length > 0
+                  ? appliance.pastMaintenance.map((date, index) => (
+                      <span key={index} className="block">
+                        {new Date(date).toLocaleDateString()}
+                      </span>
+                    ))
+                  : 'No records'}
+              </Table.Cell>
               <Table.Cell>
                 <div className="flex space-x-2">
                   <Button
@@ -211,16 +242,18 @@ export default function Appliances() {
       {/* Notifications Modal */}
       <Modal
         title="Notifications"
-        visible={isNotificationModalVisible}
+        open={isNotificationModalVisible}
         onCancel={() => setIsNotificationModalVisible(false)}
         footer={null}
       >
         {notifications.length > 0 ? (
-          <ul>
+          <ul className="list-disc pl-5">
             {notifications.map((notification, index) => (
               <li key={index} className="mb-2">
-                <strong>{notification.name}</strong> ({notification.type}) - Maintenance due on{' '}
-                <strong>{notification.maintenanceSchedule}</strong>
+                <strong>{notification.name}</strong> ({notification.type}) -{' '}
+                {new Date(notification.warrantyExpiry) <= new Date()
+                  ? `Warranty expired on ${new Date(notification.warrantyExpiry).toLocaleDateString()}`
+                  : `Maintenance due on ${new Date(notification.maintenanceSchedule).toLocaleDateString()}`}
               </li>
             ))}
           </ul>
@@ -231,7 +264,7 @@ export default function Appliances() {
 
       <Modal
         title={currentAppliance ? 'Edit Appliance' : 'Add Appliance'}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
@@ -241,15 +274,15 @@ export default function Appliances() {
             type: currentAppliance?.type || '',
             warrantyExpiry: currentAppliance ? moment(currentAppliance.warrantyExpiry) : null,
             maintenanceSchedule: currentAppliance ? moment(currentAppliance.maintenanceSchedule) : null,
+            value: currentAppliance?.value || 0,
+            pastMaintenance: currentAppliance?.pastMaintenance?.map((date) => moment(date)) || [],
           }}
           onFinish={handleSubmit}
         >
           <Form.Item
             name="name"
             label="Name"
-            rules={[
-              { required: true, message: 'Please enter the appliance name' },
-            ]}
+            rules={[{ required: true, message: 'Please enter the appliance name' }]}
           >
             <Input />
           </Form.Item>
@@ -257,9 +290,7 @@ export default function Appliances() {
           <Form.Item
             name="type"
             label="Type"
-            rules={[
-              { required: true, message: 'Please enter the appliance type' },
-            ]}
+            rules={[{ required: true, message: 'Please enter the appliance type' }]}
           >
             <Input />
           </Form.Item>
@@ -294,6 +325,20 @@ export default function Appliances() {
             ]}
           >
             <DatePicker format="YYYY-MM-DD" />
+          </Form.Item>
+
+          <Form.Item
+            name="value"
+            label="Value (LKR)"
+          >
+            <Input type="number" step="0.01" />
+          </Form.Item>
+
+          <Form.Item
+            name="pastMaintenance"
+            label="Past Maintenance Dates"
+          >
+            <DatePicker.RangePicker format="YYYY-MM-DD" />
           </Form.Item>
 
           <Form.Item>
