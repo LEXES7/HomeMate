@@ -9,6 +9,8 @@ import AISuggestions from '../components/AISuggestions';
 
 import Essentials from "../pages/Essentials/Essentials";
 
+import Clothing  from '../pages/Clothing/clothing';
+
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState('');
@@ -31,6 +33,10 @@ export default function Dashboard() {
         {tab === 'appliances' && <Appliances />}
         {tab === 'ai-suggestions' && <AISuggestions />}
 
+
+
+
+        {tab === 'clothing' && <Clothing /> }
 
 
 

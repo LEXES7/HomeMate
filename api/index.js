@@ -8,6 +8,7 @@ import userRoutes from './routes/user.routes.js';
 import authRoutes from './routes/auth.route.js';
 import applianceRoutes from './routes/appliance.routes.js';
 import essentialsRoutes from './routes/essentials.routes.js';
+import clothingRoutes from './routes/clothing.routes.js';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/appliances', applianceRoutes);
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/essentials', essentialsRoutes);
+app.use('/api/clothing', clothingRoutes); 
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
