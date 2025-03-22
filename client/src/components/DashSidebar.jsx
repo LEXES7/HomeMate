@@ -44,6 +44,22 @@ export default function UnifiedSidebar() {
               <Sidebar.Item icon={HiOutlineCalendar} as={Link} to="/dashboard?tab=ai-suggestions">
                 AI Suggestions
               </Sidebar.Item>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <Sidebar.Item icon={HiOutlineCalendar} as={Link} to="/dashboard?tab=essentials">
+               Essentials 
+               </Sidebar.Item>
             </>
           )}
 
