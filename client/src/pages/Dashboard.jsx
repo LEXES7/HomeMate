@@ -5,6 +5,10 @@ import DashProfile from '../components/DashProfile'; // Profile component
 import Appliances from './Appliances/Appliances'; // Appliances component
 import AISuggestions from '../components/AISuggestions';
 
+
+
+import Essentials from "../pages/Essentials/Essentials";
+
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState('');
@@ -26,6 +30,12 @@ export default function Dashboard() {
         {tab === 'profile' && <DashProfile />}
         {tab === 'appliances' && <Appliances />}
         {tab === 'ai-suggestions' && <AISuggestions />}
+
+
+
+
+
+        {tab === 'essentials' && <Essentials />}
       </div>
     </div>
   );
