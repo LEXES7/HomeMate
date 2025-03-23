@@ -11,6 +11,8 @@ import Essentials from "../pages/Essentials/Essentials";
 
 import Clothing  from '../pages/Clothing/clothing';
 
+import Pantry from '../pages/Pantry/Pantry';
+
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState('');
@@ -42,6 +44,7 @@ export default function Dashboard() {
 
 
         {tab === 'essentials' && <Essentials />}
+        {tab === 'pantry' && <Pantry />}
       </div>
     </div>
   );

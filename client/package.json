@@ -14,6 +14,7 @@
     "@reduxjs/toolkit": "^2.6.1",
     "antd": "^5.24.4",
     "axios": "^1.8.4",
+    "cors": "^2.8.5",
     "firebase": "^11.4.0",
     "flowbite-react": "^0.10.2",
     "jspdf": "^3.0.1",

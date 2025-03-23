@@ -2,13 +2,16 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import cors from 'cors'; // This will now work
+import cors from 'cors'; 
 import geminiRoutes from './routes/gemini.js';
 import userRoutes from './routes/user.routes.js';
 import authRoutes from './routes/auth.route.js';
 import applianceRoutes from './routes/appliance.routes.js';
 import essentialsRoutes from './routes/essentials.routes.js';
 import clothingRoutes from './routes/clothing.routes.js';
+
+
+import pantryRoutes from './routes/pantry.routes.js';
 
 dotenv.config();
 
@@ -48,6 +51,8 @@ app.use('/api/appliances', applianceRoutes);
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/essentials', essentialsRoutes);
 app.use('/api/clothing', clothingRoutes); 
+
+app.use('/api/pantry', pantryRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

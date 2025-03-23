@@ -65,6 +65,10 @@ export default function UnifiedSidebar() {
                <Sidebar.Item icon={HiOutlineCalendar} as={Link} to="/dashboard?tab=clothing">
                Clothing 
                </Sidebar.Item>
+
+               <Sidebar.Item icon={HiOutlineCalendar} as={Link} to="/dashboard?tab=pantry">
+               Pantry 
+               </Sidebar.Item>
             </>
           )}
 
