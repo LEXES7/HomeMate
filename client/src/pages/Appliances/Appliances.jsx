@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Badge, Tooltip, Table, Modal as FlowbiteModal, Select } from 'flowbite-react';
+import { Button, Card, Badge, Tooltip, Table, Modal as FlowbiteModal, Select, TextInput } from 'flowbite-react';
 import axios from 'axios';
 import moment from 'moment';
-import { HiOutlineBell, HiOutlinePlus, HiPencil, HiTrash } from 'react-icons/hi';
+import { HiOutlineBell, HiOutlinePlus, HiPencil, HiTrash, HiSearch } from 'react-icons/hi';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { DatePicker, message } from 'antd';
@@ -10,7 +10,6 @@ import { DatePicker, message } from 'antd';
 axios.defaults.baseURL = 'http://localhost:8000'; // Backend URL
 axios.defaults.withCredentials = true; // Enable cookies
 
-// Define appliance type options
 const applianceTypes = [
   'Kitchen Items',
   'Bedroom Items',
@@ -27,6 +26,7 @@ export default function Appliances() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [currentAppliance, setCurrentAppliance] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -37,6 +37,7 @@ export default function Appliances() {
     pastMaintenance: [],
   });
   const [formErrors, setFormErrors] = useState({});
+  const [modalSearchQuery, setModalSearchQuery] = useState(''); // For popup search
 
   useEffect(() => {
     fetchAppliances();
@@ -118,7 +119,6 @@ export default function Appliances() {
     setFormData((prev) => ({ ...prev, pastMaintenance: dates || [] }));
   };
 
-  // Disable past dates for warrantyExpiry
   const disablePastDates = (current) => {
     return current && current < moment().startOf('day');
   };
@@ -237,6 +237,12 @@ export default function Appliances() {
     }
   };
 
+  // Filter appliances for modal search
+  const searchedAppliances = appliances.filter((appliance) =>
+    appliance.name.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
+    appliance.type.toLowerCase().includes(modalSearchQuery.toLowerCase())
+  );
+
   const totalAppliances = appliances.length;
   const upcomingMaintenance = appliances.filter((appliance) =>
     moment(appliance.maintenanceSchedule).isAfter(moment())
@@ -254,9 +260,14 @@ export default function Appliances() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Appliance Management</h1>
-        <Button color="blue" onClick={handleAdd}>
-          <HiOutlinePlus className="mr-2 h-5 w-5" /> Add Appliance
-        </Button>
+        <div className="flex space-x-2">
+          <Button color="blue" onClick={handleAdd}>
+            <HiOutlinePlus className="mr-2 h-5 w-5" /> Add Appliance
+          </Button>
+          <Button color="gray" onClick={() => setIsSearchModalOpen(true)}>
+            <HiSearch className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -399,7 +410,7 @@ export default function Appliances() {
                 value={formData.warrantyExpiry}
                 onChange={(date) => handleDateChange('warrantyExpiry', date)}
                 format="YYYY-MM-DD"
-                disabledDate={disablePastDates} 
+                disabledDate={disablePastDates}
                 className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${formErrors.warrantyExpiry ? 'border-red-500' : ''}`}
               />
               {formErrors.warrantyExpiry && <p className="text-red-500 text-sm mt-1">{formErrors.warrantyExpiry}</p>}
@@ -445,6 +456,43 @@ export default function Appliances() {
             </div>
           </form>
         </FlowbiteModal.Body>
+      </FlowbiteModal>
+
+      {/* Search Modal */}
+      <FlowbiteModal show={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)}>
+        <FlowbiteModal.Header>Search Appliances</FlowbiteModal.Header>
+        <FlowbiteModal.Body>
+          <TextInput
+            type="text"
+            placeholder="Search by name or type..."
+            value={modalSearchQuery}
+            onChange={(e) => setModalSearchQuery(e.target.value)}
+            className="mb-4"
+          />
+          {searchedAppliances.length > 0 ? (
+            <div className="space-y-4">
+              {searchedAppliances.map((appliance) => (
+                <Card key={appliance._id} className="p-4">
+                  <h3 className="text-lg font-bold">{appliance.name}</h3>
+                  <p><strong>Type:</strong> {appliance.type}</p>
+                  <p><strong>Warranty Expiry:</strong> {moment(appliance.warrantyExpiry).format('YYYY-MM-DD')}</p>
+                  <p><strong>Maintenance Schedule:</strong> {moment(appliance.maintenanceSchedule).format('YYYY-MM-DD')}</p>
+                  <p><strong>Value:</strong> LKR {appliance.value.toFixed(2)}</p>
+                  <p><strong>Past Maintenance:</strong> {appliance.pastMaintenance.length > 0
+                    ? appliance.pastMaintenance.map((date) => moment(date).format('YYYY-MM-DD')).join(', ')
+                    : 'No records'}</p>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No appliances found matching "{modalSearchQuery}"</p>
+          )}
+        </FlowbiteModal.Body>
+        <FlowbiteModal.Footer>
+          <Button color="gray" onClick={() => setIsSearchModalOpen(false)}>
+            Close
+          </Button>
+        </FlowbiteModal.Footer>
       </FlowbiteModal>
     </div>
   );
