@@ -40,7 +40,7 @@ export default function Signin() {
         if (data.isAdmin) {
           navigate('/admin'); // Redirect to admin dashboard
         } else {
-          navigate('/dashboard'); // Redirect to user dashboard
+          navigate('/dashboard?tab=profile'); // Redirect to user dashboard
         }
       }
     } catch (error) {
@@ -62,7 +62,7 @@ export default function Signin() {
 
       <div className="flex-1 flex items-center justify-center p-10">
         <div className="max-w-md w-full">
-          {/* Signin Form */}
+
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Email" />
