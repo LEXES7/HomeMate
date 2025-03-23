@@ -62,17 +62,17 @@ export default function Home() {
   
 </h2>
 
-      {/* YouTube Video */}
+      {/* video */}
       <div className="w-full flex justify-center mt-4 mb-8">
-  <iframe
-    width="1080"
-    height="600"
-    src="https://www.youtube.com/embed/5ioh6O-gCGM?loop=1&playlist=5ioh6O-gCGM" 
-    title="YouTube video player"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowFullScreen
-    className="rounded-lg shadow-lg"
-  ></iframe>
+      <iframe
+  width="1080"
+  height="600"
+  src="https://www.youtube.com/embed/ndqUB5W75qg?loop=1&playlist=ndqUB5W75qg"
+  title="YouTube video player"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+  className="rounded-lg shadow-lg"
+></iframe>
 </div>
 
       
