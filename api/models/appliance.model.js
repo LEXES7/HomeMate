@@ -7,7 +7,7 @@ const applianceSchema = new mongoose.Schema({
   maintenanceSchedule: { type: Date, required: true },
   value: { type: Number, required: true },
   pastMaintenance: { type: [Date], default: [] },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Link to User
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, 
 }, { timestamps: true });
 
 const Appliance = mongoose.model('Appliance', applianceSchema);
