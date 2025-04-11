@@ -22,13 +22,14 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} /> {/* Dashboard route */}
         </Route>
-
+       
         <Route element={<PrivateRoute adminOnly={true} />}>
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
 
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
+       
       </Routes>
       <Footer />
     </BrowserRouter>

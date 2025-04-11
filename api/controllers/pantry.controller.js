@@ -17,6 +17,7 @@ export const addPantryItem = async (req, res) => {
     title,
     content,
     price,
+   
     expireDate,
     quantity
   });

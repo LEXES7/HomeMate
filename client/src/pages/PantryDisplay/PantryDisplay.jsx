@@ -78,6 +78,8 @@ export default function UserDashboard() {
     }
   };
 
+  
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Pantry & Grocery Page</h1>
@@ -124,6 +126,8 @@ export default function UserDashboard() {
         <p className="text-gray-600">No matching items found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+         
+          
           {filteredItems.map((item) => (
             <Card key={item._id} className="shadow-lg p-4 bg-white">
               <h2 className="text-xl font-bold text-gray-900">{item.title}</h2>

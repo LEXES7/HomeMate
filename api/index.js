@@ -11,6 +11,7 @@ import essentialsRoutes from './routes/essentials.routes.js';
 import clothingRoutes from './routes/clothing.routes.js';
 
 
+
 import pantryRoutes from './routes/pantry.routes.js';
 
 dotenv.config();
@@ -52,6 +53,7 @@ app.use('/api/gemini', geminiRoutes);
 app.use('/api/essentials', essentialsRoutes);
 app.use('/api/clothing', clothingRoutes); 
 
+
 app.use('/api/pantry', pantryRoutes);
 
 app.use((err, req, res, next) => {
@@ -59,3 +61,5 @@ app.use((err, req, res, next) => {
   const message = err.message || 'Internal Server Error';
   res.status(statusCode).json({ success: false, statusCode, message });
 });
+
+
