@@ -1,6 +1,10 @@
 import React from 'react';
 
+
 export default function About() {
+
+
+
   return (
     <div className="flex flex-col items-center">
       {/* Dark Background Section */}
@@ -18,7 +22,9 @@ Welcome to HomeMate, your all-in-one home inventory management system designed t
 With intuitive features like maintenance tracking, warranty reminders, and inventory insights, HomeMate ensures that you never run out of necessities or miss an important repair. Built with the latest MERN stack technology, HomeMate is fast, secure, and accessible anytime, anywhere. <br />
 Features: <br />
 <br />
-<li>Pantry & Grocery Management</li> <br />
+<li>
+              Pantry & Grocery Management
+            </li> <br />
 <li>Appliances & Tools Inventory</li> <br />
 <li>Medications & Personal Items Management</li> <br />
 <li>User & Admin Dashboard for Seamless Control</li> <br />
