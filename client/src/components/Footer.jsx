@@ -5,7 +5,7 @@ import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from 'react-
 
 export default function FooterCom() {
   return (
-    <Footer container className='border border-t'>
+    <Footer container className='bg-gray-100 dark:bg-gray-900'>
     <div className='w-full max-w-7xl mx-auto'>
         <div className='grid w-full justify-between sm:flex md:grid-cols-1'>
 
