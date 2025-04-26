@@ -28,7 +28,7 @@ export default function Dashboard() {
   }, [location.search]);
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex pt-16">
       <UnifiedSidebar /> {/* Render the unified sidebar */}
       <div className="flex-1 p-4">
         {/* Render content based on the tab */}
