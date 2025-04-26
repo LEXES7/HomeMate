@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import UnifiedSidebar from '../components/DashSidebar';
-import DashProfile from '../components/DashProfile'; // Profile component
-import Appliances from './Appliances/Appliances'; // Appliances component
+import DashProfile from '../components/DashProfile'; 
+import Appliances from './Appliances/Appliances'; 
 import AISuggestions from '../components/AISuggestions';
 
 
