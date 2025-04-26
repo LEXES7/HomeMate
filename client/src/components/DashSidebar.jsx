@@ -72,7 +72,7 @@ export default function UnifiedSidebar() {
               className={`${
                 activeTab === 'profile'
                   ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                  : 'text-black font-semibold hover:bg-gray-800'
+                  : 'text-black font-semibold'
               } rounded-lg transition-colors`}
               aria-label="View your profile"
             >
@@ -97,7 +97,7 @@ export default function UnifiedSidebar() {
                   className={`${
                     activeTab === 'appliances'
                       ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                      : 'text-black font-semibold hover:bg-gray-800'
+                      : 'text-black font-semibold'
                   } rounded-lg transition-colors`}
                   aria-label="Manage appliances"
                 >
@@ -118,7 +118,7 @@ export default function UnifiedSidebar() {
                   className={`${
                     activeTab === 'ai-suggestions'
                       ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                      : 'text-black font-semibold hover:bg-gray-800'
+                      : 'text-black font-semibold'
                   } rounded-lg transition-colors`}
                   aria-label="View AI suggestions"
                 >
@@ -139,7 +139,7 @@ export default function UnifiedSidebar() {
                   className={`${
                     activeTab === 'essentials'
                       ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                      : 'text-black font-semibold hover:bg-gray-800'
+                      : 'text-black font-semibold'
                   } rounded-lg transition-colors`}
                   aria-label="Manage essentials"
                 >
@@ -160,7 +160,7 @@ export default function UnifiedSidebar() {
                   className={`${
                     activeTab === 'clothing'
                       ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                      : 'text-black font-semibold hover:bg-gray-800'
+                      : 'text-black font-semibold'
                   } rounded-lg transition-colors`}
                   aria-label="Manage clothing"
                 >
@@ -181,7 +181,7 @@ export default function UnifiedSidebar() {
                   className={`${
                     activeTab === 'pantry'
                       ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                      : 'text-black font-semibold hover:bg-gray-800'
+                      : 'text-black font-semibold'
                   } rounded-lg transition-colors`}
                   aria-label="Manage pantry"
                 >
@@ -202,7 +202,7 @@ export default function UnifiedSidebar() {
                   className={`${
                     activeTab === 'pantry-details'
                       ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                      : 'text-black font-semibold hover:bg-gray-800'
+                      : 'text-black font-semibold'
                   } rounded-lg transition-colors`}
                   aria-label="View pantry details"
                 >
@@ -228,7 +228,7 @@ export default function UnifiedSidebar() {
                 className={`${
                   activeTab === 'users'
                     ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                    : 'text-black font-semibold hover:bg-gray-800'
+                    : 'text-black font-semibold'
                 } rounded-lg transition-colors`}
                 aria-label="Manage users"
               >
@@ -247,7 +247,7 @@ export default function UnifiedSidebar() {
             <Tooltip content="Sign out of your account" placement="right">
               <Sidebar.Item
                 icon={HiArrowSmRight}
-                className="cursor-pointer text-black font-semibold hover:bg-gray-800 rounded-lg"
+                className="cursor-pointer text-black font-semibold hover:bg-red-500 rounded-lg"
                 onClick={handleSignout}
                 aria-label="Sign out"
               >
