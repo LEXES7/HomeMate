@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 import teamPlaceholder from '../assets/mem.jpg';
 
 const teamMembers = [
-  { name: 'Alex Johnson', role: 'Lead Developer', image: teamPlaceholder },
-  { name: 'Sarah Lee', role: 'UI/UX Designer', image: teamPlaceholder },
-  { name: 'Michael Chen', role: 'Backend Developer', image: teamPlaceholder },
-  { name: 'Emily Davis', role: 'Project Manager', image: teamPlaceholder },
+  { name: 'Sachintha Bhashitha', role: 'Lead Developer', image: teamPlaceholder },
+  { name: 'Thiyaana Vidanaarachchi', role: 'UI/UX Designer', image: teamPlaceholder },
+  { name: 'Kaveesha', role: 'Backend Developer', image: teamPlaceholder },
+  { name: 'Naveen Gunasekara', role: 'Project Manager', image: teamPlaceholder },
 ];
 
 export default function AboutPage() {
