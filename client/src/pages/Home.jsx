@@ -4,22 +4,33 @@ import { Badge, Button, Carousel } from 'flowbite-react';
 import feature1Image from '../assets/image1.jpg'; 
 import feature2Image from '../assets/image2.jpg';
 import feature3Image from '../assets/image3.jpg';
+import feature4Image from '../assets/image3.jpg';
 
 const features = [
   {
     title: 'Real-Time Tracking',
-    description: 'Monitor your inventory levels in real-time with instant updates.',
+    description: 'Monitor your inventory levels instantly with live updates across all devices.',
     image: feature1Image,
   },
   {
-    title: 'Barcode Scanning',
-    description: 'Quickly add or update items using our built-in barcode scanner.',
+    title: 'Notification Alerts',
+    description: 'Get notified when stock levels are low or when items are added or removed.',
     image: feature2Image,
   },
   {
+    title: 'AI Assistant',
+    description: 'Get personalized recommendations and insights based on your inventory data.',
+    image: feature1Image,
+  },
+  {
     title: 'Detailed Reports',
-    description: 'Generate insights with customizable inventory reports.',
+    description: 'Generate customizable reports to gain insights into your inventory performance.',
     image: feature3Image,
+  },
+  {
+    title: 'Team Collaboration',
+    description: 'Enable your team to manage inventory together with role-based access.',
+    image: feature4Image,
   },
 ];
 

@@ -15,9 +15,14 @@ const features = [
     image: feature1Image,
   },
   {
-    title: 'Barcode Scanning',
-    description: 'Add or update items quickly using our integrated barcode scanning feature.',
+    title: 'Notification Alerts',
+    description: 'Get notified when stock levels are low or when items are added or removed.',
     image: feature2Image,
+  },
+  {
+    title: 'AI Assistant',
+    description: 'Get personalized recommendations and insights based on your inventory data.',
+    image: feature1Image,
   },
   {
     title: 'Detailed Reports',
