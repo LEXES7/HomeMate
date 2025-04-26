@@ -1,11 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge, Button, Carousel } from 'flowbite-react';
-import feature1Image from '../assets/image1.jpg'; // Replace with feature-specific images
+import feature1Image from '../assets/image1.jpg'; 
 import feature2Image from '../assets/image2.jpg';
 import feature3Image from '../assets/image3.jpg';
 
-// Feature data
 const features = [
   {
     title: 'Real-Time Tracking',
@@ -27,7 +26,6 @@ const features = [
 export default function Home() {
   const scrollRef = useRef(null);
 
-  // Auto-scroll for features (inspired by Architecture page)
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
