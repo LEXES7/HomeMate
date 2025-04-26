@@ -1,97 +1,145 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Badge, Button, Carousel } from 'flowbite-react';
+import feature1Image from '../assets/image1.jpg'; // Replace with feature-specific images
+import feature2Image from '../assets/image2.jpg';
+import feature3Image from '../assets/image3.jpg';
 
-import Image1 from '../assets/image1.jpg';
-import Image2 from '../assets/image2.jpg'; 
-import Image3 from '../assets/image3.jpg'; 
+// Feature data
+const features = [
+  {
+    title: 'Real-Time Tracking',
+    description: 'Monitor your inventory levels in real-time with instant updates.',
+    image: feature1Image,
+  },
+  {
+    title: 'Barcode Scanning',
+    description: 'Quickly add or update items using our built-in barcode scanner.',
+    image: feature2Image,
+  },
+  {
+    title: 'Detailed Reports',
+    description: 'Generate insights with customizable inventory reports.',
+    image: feature3Image,
+  },
+];
 
 export default function Home() {
-  const images = [Image1, Image2, Image3]; 
+  const scrollRef = useRef(null);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
+  // Auto-scroll for features (inspired by Architecture page)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000); // Change image 3 seconds
-    return () => clearInterval(interval);
-  }, [images.length]);
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
 
-  const handleDotClick = (index) => {
-    setCurrentIndex(index);
-  };
+    const scrollWidth = scrollContainer.scrollWidth / 2;
+    let scrollPosition = 0;
+
+    const scroll = () => {
+      scrollPosition += 2;
+      if (scrollPosition >= scrollWidth) {
+        scrollPosition = 0;
+        scrollContainer.scrollLeft = 0;
+      } else {
+        scrollContainer.scrollLeft = scrollPosition;
+      }
+    };
+
+    const interval = setInterval(scroll, 20);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center min-h-[70vh]">
-      
-      <h1 className="text-7xl font-bold text-center mb-4 mt-10 ">
-        <span className="bg-gradient-to-r from-[#A41FCD] to-[#FC9497] bg-clip-text text-transparent font-bold">
-          A Simple 
-        </span>  Inventory
-      </h1>
-      <h2 className="text-5xl font-medium text-center mb-8 color-black dark:white">
-        Management Software
-      </h2>
-
-      {/* Image Slider */}
-      <div className="relative w-[150px] h-[100px] sm:w-[200px] sm:h-[150px] lg:w-[500px] lg:h-[300px] overflow-hidden rounded-lg shadow-lg mt-6">
-        <img
-          src={images[currentIndex]}
-          alt={`Slide ${currentIndex + 1}`}
-          className="w-full h-full object-cover transition-all duration-500"
-        />
+    <div className="w-full">
+      {/* Hero Section */}
+      <div className="relative w-full h-[80vh]">
+     
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            Simplify Your <span className="bg-gradient-to-r from-[#A41FCD] to-[#FC9497] bg-clip-text text-transparent">Inventory</span> Management
+          </h1>
+          <p className="text-lg md:text-xl mb-6">
+            The easiest way for small businesses to track supplies, tools, and equipment.
+          </p>
+          <div className="flex gap-4">
+            <Link to="/signup">
+              <Button gradientDuoTone="purpleToPink" size="lg">
+                Get Started
+              </Button>
+            </Link>
+            <Button color="light" size="lg">
+              Watch Demo
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Dots */}
-      <div className="flex justify-center items-center space-x-2 mt-6 mb-6">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handleDotClick(index)}
-            className={`w-3 h-3 rounded-full ${
-              index === currentIndex ? 'bg-[#A41FCD]' : 'bg-gray-400'
-            }`}
-          ></button>
-        ))}
+      {/* Testimonial Section */}
+      <div className="w-full bg-gray-100 py-12 px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-lg md:text-xl italic text-gray-800 mb-4">
+            “This app saved us hours managing our stock! It’s intuitive and perfect for our small business.”
+          </p>
+          <p className="text-right text-gray-600">- Sarah, Small Business Owner</p>
+        </div>
       </div>
 
-      <h2 className="text-lg sm:text-xl font-mono text-center mb-8 text-gray-800 dark:text-gray-200 leading-relaxed">
-  <span className="font-semibold">The best inventory software</span> for small businesses <br />
-  to <span className="font-semibold">manage their physical inventory</span>, <br />
-  <span className="font-semibold">including supplies, materials, tools, and equipment</span>, <br />
-  
-</h2>
+      {/* Features Section */}
+      <div className="w-full bg-gray-900 py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-10 text-center">Why Choose Us?</h2>
+          <div
+            ref={scrollRef}
+            className="flex overflow-x-auto space-x-6 pb-4 snap-x snap-mandatory scroll-smooth scrollbar-hide"
+          >
+            {[...features, ...features].map((feature, index) => (
+              <div
+                key={`${feature.title}-${index}`}
+                className="flex-none w-72 bg-gray-800 rounded-xl shadow-lg overflow-hidden snap-center"
+              >
+                <img
+                  src={feature.image}
+                  alt={feature.title}
+                  className="w-full h-48 object-cover rounded-t-xl"
+                />
+                <div className="p-4">
+                  <h3 className="text-xl font-bold text-white mb-2">{feature.title.toUpperCase()}</h3>
+                  <Badge color="purple" className="mb-3">
+                    Inventory Feature
+                  </Badge>
+                  <p className="text-gray-300 text-sm">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      {/* video */}
-      <div className="w-full flex justify-center mt-4 mb-8">
-      <iframe
-  width="1080"
-  height="600"
-  src="https://www.youtube.com/embed/ndqUB5W75qg?loop=1&playlist=ndqUB5W75qg"
-  title="YouTube video player"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-  className="rounded-lg shadow-lg"
-></iframe>
-</div>
+      {/* Video Section */}
+      <div className="w-full py-12 px-4 bg-white text-center">
+        <h2 className="text-3xl font-bold mb-6">See How It Works</h2>
+        <div className="w-full max-w-4xl mx-auto">
+          <iframe
+            className="w-full aspect-video rounded-lg shadow-lg"
+            src="https://www.youtube.com/embed/ndqUB5W75qg?loop=1&playlist=ndqUB5W75qg"
+            title="Inventory Management Demo"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
 
-      
-<div className=" border border-t-4 w-full mt-4 bg-white py-8 px-4 shadow-lg rounded-lg text-center">
-  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-  Track and manage 
-  </h3>
-  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-  your entire inventory 
-  </h2>
-  <h1 className="text-5xl sm:text-6xl font-extrabold text-[#A41FCD] mb-6">
-  with one easy app.
-  </h1>
-  <Link to="/signup">
-  <button className="bg-black text-white font-medium py-2 px-6 rounded-full hover:bg-gray-800 transition duration-300">
-    Join
-  </button>
-  </Link>
-</div>
+      {/* Final CTA Section */}
+      <div className="w-full bg-gradient-to-r from-[#A41FCD] to-[#FC9497] py-12 px-4 text-center text-white">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Take Control of Your Inventory?</h2>
+        <p className="text-lg mb-6">Join thousands of small businesses managing their stock effortlessly.</p>
+        <Link to="/signup">
+          <Button color="dark" size="xl" className="hover:bg-gray-800">
+            Start Free Trial
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
