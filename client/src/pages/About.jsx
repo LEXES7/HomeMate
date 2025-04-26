@@ -28,7 +28,6 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Our Story Section */}
       <div className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -45,7 +44,6 @@ export default function AboutPage() {
           </p>
         </motion.div>
 
-        {/* Our Mission Section */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +56,7 @@ export default function AboutPage() {
           </p>
         </motion.div>
 
-        {/* Our Team Section */}
+        {/* Our Team*/}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge, Button, Card } from 'flowbite-react';
 import { motion } from 'framer-motion';
-import feature1Image from '../assets/image1.jpg'; // Replace with feature-specific images
+import feature1Image from '../assets/image1.jpg'; 
 import feature2Image from '../assets/image2.jpg';
 import feature3Image from '../assets/image3.jpg';
 import feature4Image from '../assets/image3.jpg';
@@ -48,7 +48,6 @@ export default function FeaturesPage() {
         </div>
       </div>
 
-      {/* Features Introduction */}
       <div className="container mx-auto px-4 py-8 text-center">
         <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
           Our inventory management software is designed to streamline your operations, whether you're tracking supplies, tools, or equipment. Explore the features below to see how we can help your business thrive.
@@ -85,7 +84,6 @@ export default function FeaturesPage() {
           ))}
         </motion.div>
 
-        {/* Call to Action */}
         <div className="text-center mt-12 ">
           <Link to="/signup">
             <Button
