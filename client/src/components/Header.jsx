@@ -21,7 +21,7 @@ export default function Header() {
 
 
 
-  // Handle search submission
+  
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -62,7 +62,7 @@ export default function Header() {
   }`}
   fluid
 >
-      {/* Brand/Logo */}
+      {/* Logo */}
       <Link to="/home" className="flex items-center gap-3">
         <img
           src={Logo}
@@ -74,7 +74,7 @@ export default function Header() {
         </span>
       </Link>
 
-      {/* Navigation Links (Centered) */}
+
       <Navbar.Collapse className="mx-auto">
         {['home', 'features', 'about'].map((item) => (
           <motion.div
@@ -99,9 +99,9 @@ export default function Header() {
         ))}
       </Navbar.Collapse>
 
-      {/* Right Section */}
+
       <div className="flex items-center gap-2 md:gap-4">
-        {/* Search Form */}
+
         <form onSubmit={handleSearch} className="hidden lg:flex items-center">
           <TextInput
             type="text"
@@ -114,7 +114,7 @@ export default function Header() {
           />
         </form>
 
-        {/* Mobile Search Toggle */}
+
         <Tooltip content="Search Inventory" placement="bottom">
           <Button
             className="w-10 h-10 lg:hidden bg-gray-800 hover:bg-gray-700"
@@ -126,7 +126,7 @@ export default function Header() {
           </Button>
         </Tooltip>
 
-        {/* Mobile Search Input */}
+
         {searchOpen && (
           <form onSubmit={handleSearch} className="lg:hidden w-full mt-2">
             <TextInput
@@ -157,7 +157,7 @@ export default function Header() {
           </Button>
         </Tooltip>
 
-        {/* User Dropdown or Sign-In */}
+        {/* User Dropdown*/}
         {currentUser ? (
           <Dropdown
             arrowIcon={false}
