@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Button as AntdButton, Modal as AntdModal, Form, Input, DatePicker, Select, message } from 'antd';
-import { Modal as FlowbiteModal, TextInput, Card, Button as FlowbiteButton } from 'flowbite-react';
-import { HiSearch } from 'react-icons/hi';
+import { Modal as FlowbiteModal, TextInput, Card, Button as FlowbiteButton, Badge } from 'flowbite-react';
+import { HiSearch, HiBell } from 'react-icons/hi';
 import axios from 'axios';
 import moment from 'moment';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-axios.defaults.baseURL = 'http://localhost:8000'; // Backend URL
-axios.defaults.withCredentials = true; // Enable cookies
+axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.withCredentials = true;
 
 export default function Essentials() {
   const [essentials, setEssentials] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false); // Add/Edit modal
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // Search modal
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false); // Notifications modal
   const [currentEssential, setCurrentEssential] = useState(null);
   const [form] = Form.useForm();
-  const [searchQuery, setSearchQuery] = useState(''); // Search input state
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchEssentials();
@@ -69,7 +70,6 @@ export default function Essentials() {
         ...values,
         expiryDate: values.expiryDate.format('YYYY-MM-DD'),
       };
-
       if (currentEssential) {
         await axios.put(`/api/essentials/${currentEssential._id}`, payload);
         message.success('Essential item updated successfully.');
@@ -77,7 +77,6 @@ export default function Essentials() {
         await axios.post('/api/essentials', payload);
         message.success('Essential item added successfully.');
       }
-
       fetchEssentials();
       setIsModalVisible(false);
     } catch (error) {
@@ -86,19 +85,20 @@ export default function Essentials() {
     }
   };
 
-  // Filter essentials based on search query
   const searchedEssentials = essentials.filter((essential) =>
     essential.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     essential.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Generate PDF report
+  const expiredEssentials = essentials.filter((essential) =>
+    moment(essential.expiryDate).isBefore(moment(), 'day')
+  );
+
   const generatePDF = () => {
     if (essentials.length === 0) {
       message.warning('No essentials available to generate a report.');
       return;
     }
-
     try {
       const doc = new jsPDF();
       doc.setFontSize(18);
@@ -115,7 +115,7 @@ export default function Essentials() {
         essential.noOfItems || 'N/A',
         essential.expiryDate ? moment(essential.expiryDate).format('YYYY-MM-DD') : 'N/A',
         essential.description || 'N/A',
-        essential.currentPrice ? `LKR ${parseFloat(essential.currentPrice).toFixed(2)} `: 'N/A',
+        essential.currentPrice ? `LKR ${parseFloat(essential.currentPrice).toFixed(2)} ` : 'N/A',
         essential.type || 'N/A',
       ]);
 
@@ -135,10 +135,29 @@ export default function Essentials() {
     }
   };
 
+  // Category counts
+  const totalFood = essentials.filter(e => e.type === 'Food').length;
+  const totalMedicine = essentials.filter(e => e.type === 'Medicine').length;
+  const totalCleaning = essentials.filter(e => e.type === 'Cleaning Supplies').length;
+  const totalOthers = essentials.filter(e => !['Food', 'Medicine', 'Cleaning Supplies'].includes(e.type)).length;
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Essentials</h1>
+        <div className="flex items-center space-x-3">
+          <h1 className="text-3xl font-bold text-gray-900">Essentials</h1>
+          <div className="relative">
+            <HiBell
+              onClick={() => setIsNotificationOpen(true)}
+              className="h-7 w-7 text-gray-700 cursor-pointer"
+            />
+            {expiredEssentials.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                {expiredEssentials.length}
+              </span>
+            )}
+          </div>
+        </div>
         <div className="flex space-x-2">
           <AntdButton
             type="primary"
@@ -164,13 +183,33 @@ export default function Essentials() {
         </div>
       </div>
 
+      {/* Top Cases */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <Card className="text-center">
+          <h5 className="text-lg font-semibold text-gray-700">Total Food</h5>
+          <p className="text-2xl font-bold text-blue-600">{totalFood}</p>
+        </Card>
+        <Card className="text-center">
+          <h5 className="text-lg font-semibold text-gray-700">Total Medicine</h5>
+          <p className="text-2xl font-bold text-green-600">{totalMedicine}</p>
+        </Card>
+        <Card className="text-center">
+          <h5 className="text-lg font-semibold text-gray-700">Total Cleaning Supplies</h5>
+          <p className="text-2xl font-bold text-yellow-600">{totalCleaning}</p>
+        </Card>
+        <Card className="text-center">
+          <h5 className="text-lg font-semibold text-gray-700">Total Others</h5>
+          <p className="text-2xl font-bold text-purple-600">{totalOthers}</p>
+        </Card>
+      </div>
+
       {loading ? (
         <p className="text-gray-600">Loading...</p>
       ) : essentials.length === 0 ? (
         <p className="text-gray-600">No essentials available.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {essentials.map((essential) => (
+          {searchedEssentials.map((essential) => (
             <div
               key={essential._id}
               className="border border-gray-200 rounded-lg p-4 shadow-md bg-white"
@@ -181,7 +220,7 @@ export default function Essentials() {
                 Expiry Date: {moment(essential.expiryDate).format('YYYY-MM-DD')}
               </p>
               <p className="text-gray-600">Description: {essential.description}</p>
-              <p className="text-gray-600">Current Price: LKR {essential.currentPrice.toFixed(2)}</p>
+              <p className="text-gray-600">Current Price: LKR {essential.currentPrice?.toFixed(2)}</p>
               <p className="text-gray-600">Type: {essential.type}</p>
               <div className="flex justify-between mt-4">
                 <AntdButton
@@ -205,167 +244,23 @@ export default function Essentials() {
         </div>
       )}
 
-      {/* Add/Edit Modal (Ant Design) */}
-      <AntdModal
-        title={
-          <span className="text-2xl font-bold text-gray-900">
-            {currentEssential ? 'Edit Essential' : 'Add Essential'}
-          </span>
-        }
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        footer={null}
-        className="rounded-lg"
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className="space-y-4"
-        >
-          <Form.Item
-            name="itemName"
-            label={<span className="text-sm font-medium text-gray-700">Item Name</span>}
-            rules={[{ required: true, message: 'Please enter the item name' }]}
-          >
-            <Input
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="noOfItems"
-            label={<span className="text-sm font-medium text-gray-700">Number of Items</span>}
-            rules={[
-              { required: true, message: 'Please enter the number of items' },
-              {
-                validator(_, value) {
-                  const numValue = Number(value);
-                  if (!value || (!isNaN(numValue) && numValue >= 1)) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Number of items must be at least 1'));
-                },
-              },
-            ]}
-          >
-            <Input
-              type="number"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="expiryDate"
-            label={<span className="text-sm font-medium text-gray-700">Expiry Date</span>}
-            rules={[{ required: true, message: 'Please select the expiry date' }]}
-          >
-            <DatePicker
-              format="YYYY-MM-DD"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            label={<span className="text-sm font-medium text-gray-700">Description</span>}
-            rules={[{ required: true, message: 'Please enter a description' }]}
-          >
-            <Input.TextArea
-              rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="currentPrice"
-            label={<span className="text-sm font-medium text-gray-700">Current Price (LKR)</span>}
-            rules={[
-              { required: true, message: 'Please enter the current price' },
-              {
-                validator(_, value) {
-                  if (!value || !isNaN(Number(value))) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Current price must be a number'));
-                },
-              },
-            ]}
-          >
-            <Input
-              type="number"
-              step="0.01"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="type"
-            label={<span className="text-sm font-medium text-gray-700">Type</span>}
-            rules={[{ required: true, message: 'Please select the type of essential item' }]}
-          >
-            <Select
-              placeholder="Select type"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              <Select.Option value="Food">Food</Select.Option>
-              <Select.Option value="Medicine">Medicine</Select.Option>
-              <Select.Option value="Cleaning Supplies">Cleaning Supplies</Select.Option>
-              <Select.Option value="Clothing">Clothing</Select.Option>
-              <Select.Option value="Other">Other</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item>
-            <AntdButton
-              type="primary"
-              htmlType="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md w-full"
-            >
-              {currentEssential ? 'Update' : 'Add'}
-            </AntdButton>
-          </Form.Item>
-        </Form>
-      </AntdModal>
-
-      {/* Search Modal (Flowbite) */}
-      <FlowbiteModal show={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)}>
-        <FlowbiteModal.Header>Search Essentials</FlowbiteModal.Header>
+      {/* Notifications Modal */}
+      <FlowbiteModal show={isNotificationOpen} onClose={() => setIsNotificationOpen(false)}>
+        <FlowbiteModal.Header>Expired Essentials</FlowbiteModal.Header>
         <FlowbiteModal.Body>
-          <TextInput
-            type="text"
-            placeholder="Search by item name or description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-4"
-          />
-          {searchedEssentials.length > 0 ? (
-            <div className="space-y-4">
-              {searchedEssentials.map((essential) => (
-                <Card key={essential._id} className="p-4">
-                  <h3 className="text-lg font-bold text-gray-800">{essential.itemName}</h3>
-                  <p className="text-gray-600"><strong>No. of Items:</strong> {essential.noOfItems}</p>
-                  <p className="text-gray-600"><strong>Expiry Date:</strong> {moment(essential.expiryDate).format('YYYY-MM-DD')}</p>
-                  <p className="text-gray-600"><strong>Description:</strong> {essential.description}</p>
-                  <p className="text-gray-600"><strong>Current Price:</strong> LKR {essential.currentPrice.toFixed(2)}</p>
-                  <p className="text-gray-600"><strong>Type:</strong> {essential.type}</p>
-                </Card>
-              ))}
-            </div>
+          {expiredEssentials.length === 0 ? (
+            <p className="text-gray-600">No expired items!</p>
           ) : (
-            <p className="text-gray-500">No essentials found matching "{searchQuery}"</p>
+            <ul className="space-y-2">
+              {expiredEssentials.map((essential) => (
+                <li key={essential._id} className="text-sm text-gray-800">
+                  {essential.itemName} - Expired on {moment(essential.expiryDate).format('YYYY-MM-DD')}
+                </li>
+              ))}
+            </ul>
           )}
         </FlowbiteModal.Body>
-        <FlowbiteModal.Footer>
-          <FlowbiteButton
-            color="gray"
-            onClick={() => setIsSearchModalOpen(false)}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md"
-          >
-            Close
-          </FlowbiteButton>
-        </FlowbiteModal.Footer>
       </FlowbiteModal>
-    </div>
-  );
+    </div>
+  );
 }
