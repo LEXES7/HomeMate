@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button as AntdButton, Modal as AntdModal, Form, Input, DatePicker, message } from 'antd';
+import { Button as AntdButton, Modal as AntdModal, Form, Input, DatePicker, Select, message } from 'antd';
 import { Modal as FlowbiteModal, TextInput, Card, Button as FlowbiteButton } from 'flowbite-react';
 import { HiSearch } from 'react-icons/hi';
 import axios from 'axios';
@@ -109,13 +109,14 @@ export default function Essentials() {
       doc.setFontSize(12);
       doc.text(`Total Essentials: ${essentials.length}`, 14, 40);
 
-      const tableColumn = ['Item Name', 'No. of Items', 'Expiry Date', 'Description', 'Current Price (LKR)'];
+      const tableColumn = ['Item Name', 'No. of Items', 'Expiry Date', 'Description', 'Current Price (LKR)', 'Type'];
       const tableRows = essentials.map((essential) => [
         essential.itemName || 'N/A',
         essential.noOfItems || 'N/A',
         essential.expiryDate ? moment(essential.expiryDate).format('YYYY-MM-DD') : 'N/A',
         essential.description || 'N/A',
-        essential.currentPrice ? `LKR ${parseFloat(essential.currentPrice).toFixed(2)}` : 'N/A',
+        essential.currentPrice ? `LKR ${parseFloat(essential.currentPrice).toFixed(2)} `: 'N/A',
+        essential.type || 'N/A',
       ]);
 
       autoTable(doc, {
@@ -181,6 +182,7 @@ export default function Essentials() {
               </p>
               <p className="text-gray-600">Description: {essential.description}</p>
               <p className="text-gray-600">Current Price: LKR {essential.currentPrice.toFixed(2)}</p>
+              <p className="text-gray-600">Type: {essential.type}</p>
               <div className="flex justify-between mt-4">
                 <AntdButton
                   type="link"
@@ -214,9 +216,6 @@ export default function Essentials() {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
         className="rounded-lg"
-        styles={{
-          body: {  padding: '1.5rem'  },
-        }}
       >
         <Form
           form={form}
@@ -300,6 +299,23 @@ export default function Essentials() {
             />
           </Form.Item>
 
+          <Form.Item
+            name="type"
+            label={<span className="text-sm font-medium text-gray-700">Type</span>}
+            rules={[{ required: true, message: 'Please select the type of essential item' }]}
+          >
+            <Select
+              placeholder="Select type"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              <Select.Option value="Food">Food</Select.Option>
+              <Select.Option value="Medicine">Medicine</Select.Option>
+              <Select.Option value="Cleaning Supplies">Cleaning Supplies</Select.Option>
+              <Select.Option value="Clothing">Clothing</Select.Option>
+              <Select.Option value="Other">Other</Select.Option>
+            </Select>
+          </Form.Item>
+
           <Form.Item>
             <AntdButton
               type="primary"
@@ -332,6 +348,7 @@ export default function Essentials() {
                   <p className="text-gray-600"><strong>Expiry Date:</strong> {moment(essential.expiryDate).format('YYYY-MM-DD')}</p>
                   <p className="text-gray-600"><strong>Description:</strong> {essential.description}</p>
                   <p className="text-gray-600"><strong>Current Price:</strong> LKR {essential.currentPrice.toFixed(2)}</p>
+                  <p className="text-gray-600"><strong>Type:</strong> {essential.type}</p>
                 </Card>
               ))}
             </div>
@@ -349,6 +366,6 @@ export default function Essentials() {
           </FlowbiteButton>
         </FlowbiteModal.Footer>
       </FlowbiteModal>
-    </div>
-  );
+    </div>
+  );
 }

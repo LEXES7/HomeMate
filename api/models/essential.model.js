@@ -6,6 +6,7 @@ const essentialSchema = new mongoose.Schema({
   expiryDate: { type: Date, required: true },
   description: { type: String, required: true },
   currentPrice: { type: Number, required: true },
+  type: { type: String, required: true},
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
