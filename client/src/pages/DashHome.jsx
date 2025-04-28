@@ -4,25 +4,29 @@ import { Card } from 'flowbite-react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
-// Register Chart.js components
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-axios.defaults.baseURL = 'http://localhost:8000'; // Backend URL
-axios.defaults.withCredentials = true; // Enable cookies
+axios.defaults.baseURL = 'http://localhost:8000'; 
+axios.defaults.withCredentials = true; 
 
 export default function DashHome() {
   const [totalAppliances, setTotalAppliances] = useState(0);
   const [totalEssentials, setTotalEssentials] = useState(0);
   const [totalClothing, setTotalClothing] = useState(0);
-  const [username, setUsername] = useState('User'); // Default username fallback
+  const [username, setUsername] = useState('User'); // Default username
   const [greeting, setGreeting] = useState('');
+  const [currentTime, setCurrentTime] = useState(''); // State for current time
 
   useEffect(() => {
     fetchTotalAppliances();
     fetchTotalEssentials();
     fetchTotalClothing();
     setGreetingBasedOnTime();
-    fetchUsername(); // Fetch the username from the backend
+    fetchUsername(); 
+    updateTime(); // Set the initial time
+    const interval = setInterval(updateTime, 1000); // Update time 
+
+    return () => clearInterval(interval); 
   }, []);
 
   const fetchTotalAppliances = async () => {
@@ -63,10 +67,10 @@ export default function DashHome() {
       const response = await axios.get('/api/user/profile', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setUsername(response.data.username || 'User'); // Set username from backend response
+      setUsername(response.data.username || 'User'); // Set username from backend
     } catch (error) {
       console.error('Error fetching username:', error);
-      setUsername('User'); // Fallback to default username
+      setUsername('User'); 
     }
   };
 
@@ -81,15 +85,21 @@ export default function DashHome() {
     }
   };
 
-  // Data for the bar chart
-  const chartData = {
+  const updateTime = () => {
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    setCurrentTime(formattedTime);
+  };
+
+//barchart data
+   const chartData = {
     labels: ['Appliances', 'Essentials', 'Clothing'],
     datasets: [
       {
         label: 'Total Items',
         data: [totalAppliances, totalEssentials, totalClothing],
         backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'], // Colors for each bar
-        borderColor: ['#2563eb', '#059669', '#7c3aed'], // Border colors
+        borderColor: ['#2563eb', '#059669', '#7c3aed'], 
         borderWidth: 1,
       },
     ],
@@ -97,7 +107,7 @@ export default function DashHome() {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allow resizing
+    maintainAspectRatio: false, 
     plugins: {
       legend: {
         display: true,
@@ -124,13 +134,17 @@ export default function DashHome() {
   return (
     <div className="p-6">
       {/* Greeting Section */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
-          {greeting}, {username}!
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">
-          Here's an overview of your items.
-        </p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+            {greeting}, {username}!
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Here's an overview of your items.
+          </p>
+        </div>
+        {/* Display current time */}
+        <p className="text-lg sm:text-xl font-medium text-gray-600 dark:text-gray-400">{currentTime}</p>
       </div>
 
       {/* Summary Cards */}
@@ -173,7 +187,7 @@ export default function DashHome() {
       {/* Bar Chart */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Items Overview</h2>
-        <div className="h-64"> {/* Adjust height for a smaller chart */}
+        <div className="h-96"> 
           <Bar data={chartData} options={chartOptions} />
         </div>
       </div>
