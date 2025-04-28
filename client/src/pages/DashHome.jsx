@@ -144,7 +144,7 @@ export default function DashHome() {
           </p>
         </div>
         {/* Display current time */}
-        <p className="mt-2 sm:mt-0 text-base sm:text-lg font-medium text-gray-600 dark:text-gray-400">
+        <p className="mt-2 sm:mt-0 text-lg sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow-md">
           {currentTime}
         </p>
       </div>
