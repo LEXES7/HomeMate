@@ -13,6 +13,7 @@ export default function DashHome() {
   const [totalAppliances, setTotalAppliances] = useState(0);
   const [totalEssentials, setTotalEssentials] = useState(0);
   const [totalClothing, setTotalClothing] = useState(0);
+  const [totalPantry, setTotalPantry] = useState(0); 
   const [username, setUsername] = useState('User'); // Default username
   const [greeting, setGreeting] = useState('');
   const [currentTime, setCurrentTime] = useState(''); // State for current time
@@ -21,6 +22,7 @@ export default function DashHome() {
     fetchTotalAppliances();
     fetchTotalEssentials();
     fetchTotalClothing();
+    fetchTotalPantry(); 
     setGreetingBasedOnTime();
     fetchUsername(); 
     updateTime(); // Set the initial time
@@ -62,6 +64,17 @@ export default function DashHome() {
     }
   };
 
+  const fetchTotalPantry = async () => {
+    try {
+      const response = await axios.get('/api/pantry', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setTotalPantry(response.data.length); // Count total pantry items
+    } catch (error) {
+      console.error('Error fetching total pantry items:', error);
+    }
+  };
+
   const fetchUsername = async () => {
     try {
       const response = await axios.get('/api/user/profile', {
@@ -93,13 +106,13 @@ export default function DashHome() {
 
   // Bar chart data
   const chartData = {
-    labels: ['Appliances', 'Essentials', 'Clothing'],
+    labels: ['Appliances', 'Essentials', 'Clothing', 'Grocery'], 
     datasets: [
       {
         label: 'Total Items',
-        data: [totalAppliances, totalEssentials, totalClothing],
-        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'], // Colors for each bar
-        borderColor: ['#2563eb', '#059669', '#7c3aed'], 
+        data: [totalAppliances, totalEssentials, totalClothing, totalPantry],
+        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b'],
+        borderColor: ['#2563eb', '#059669', '#7c3aed', '#d97706'],
         borderWidth: 1,
       },
     ],
@@ -150,7 +163,7 @@ export default function DashHome() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
         <Card className="bg-blue-100 dark:bg-blue-900 shadow-md hover:shadow-lg transition-shadow duration-300">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-blue-200 dark:bg-blue-800 rounded-full">
@@ -181,6 +194,17 @@ export default function DashHome() {
             <div>
               <h3 className="text-sm sm:text-base font-semibold">Total Clothing</h3>
               <p className="text-lg sm:text-xl font-bold">{totalClothing}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="bg-yellow-100 dark:bg-yellow-900 shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-yellow-200 dark:bg-yellow-800 rounded-full">
+              <span className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-300">P</span>
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-semibold">Total Grocery</h3>
+              <p className="text-lg sm:text-xl font-bold">{totalPantry}</p>
             </div>
           </div>
         </Card>
