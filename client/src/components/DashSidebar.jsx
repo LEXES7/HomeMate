@@ -89,6 +89,31 @@ export default function UnifiedSidebar() {
                 animate="animate"
                 whileHover="hover"
               >
+                
+              
+              <Sidebar.Item
+              icon={HiOutlineLightBulb}
+              as={Link}
+              to="/dashboard?tab=dhome"
+              active={activeTab === 'dhome'}
+              className={`${
+                activeTab === 'dhome'
+                  ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
+                  : 'text-black font-semibold'
+              } rounded-lg transition-colors`}
+              aria-label="View dashhome"
+            >
+              Home
+            </Sidebar.Item>
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+          >
+
+
                 <Sidebar.Item
                   icon={HiOutlineCube}
                   as={Link}

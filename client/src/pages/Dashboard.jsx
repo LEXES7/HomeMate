@@ -4,6 +4,7 @@ import UnifiedSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile'; 
 import Appliances from './Appliances/Appliances'; 
 import AISuggestions from '../components/AISuggestions';
+import DashHome from '../pages/DashHome';
 
 
 
@@ -35,6 +36,7 @@ export default function Dashboard() {
         {tab === 'profile' && <DashProfile />}
         {tab === 'appliances' && <Appliances />}
         {tab === 'ai-suggestions' && <AISuggestions />}
+        {tab === 'dhome' && < DashHome />}
 
 
 
