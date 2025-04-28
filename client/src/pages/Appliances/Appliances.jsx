@@ -5,7 +5,10 @@ import moment from 'moment';
 import { HiOutlineBell, HiOutlinePlus, HiPencil, HiTrash, HiSearch } from 'react-icons/hi';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { DatePicker, message } from 'antd';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 axios.defaults.baseURL = 'http://localhost:8000'; // Backend URL
 axios.defaults.withCredentials = true; // Enable cookies
@@ -52,7 +55,7 @@ export default function Appliances() {
       setAppliances(response.data);
     } catch (error) {
       console.error('Fetch appliances error:', error);
-      message.error(error.response?.data?.message || 'Failed to fetch appliances');
+      toast.error(error.response?.data?.message || 'Failed to fetch appliances');
     } finally {
       setLoading(false);
     }
@@ -79,10 +82,10 @@ export default function Appliances() {
     setFormData({
       name: appliance.name,
       type: appliance.type,
-      warrantyExpiry: moment(appliance.warrantyExpiry),
-      maintenanceSchedule: moment(appliance.maintenanceSchedule),
+      warrantyExpiry: appliance.warrantyExpiry ? new Date(appliance.warrantyExpiry) : null,
+      maintenanceSchedule: appliance.maintenanceSchedule ? new Date(appliance.maintenanceSchedule) : null,
       value: appliance.value.toString(),
-      pastMaintenance: appliance.pastMaintenance?.map((date) => moment(date)) || [],
+      pastMaintenance: appliance.pastMaintenance?.map((date) => new Date(date)) || [],
     });
     setFormErrors({});
     setIsModalOpen(true);
@@ -93,11 +96,11 @@ export default function Appliances() {
       await axios.delete(`/api/appliances/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      message.success('Appliance deleted successfully.');
+      toast.success('Appliance deleted successfully.');
       fetchAppliances();
     } catch (error) {
       console.error('Delete appliance error:', error);
-      message.error(error.response?.data?.message || 'Failed to delete appliance');
+      toast.error(error.response?.data?.message || 'Failed to delete appliance');
     }
   };
 
@@ -109,18 +112,19 @@ export default function Appliances() {
   };
 
   const handleDateChange = (field, date) => {
-    console.log(`Date changed: ${field} = ${date ? date.format('YYYY-MM-DD') : 'null'}`);
+    console.log(`Date changed: ${field} = ${date ? moment(date).format('YYYY-MM-DD') : 'null'}`);
     setFormData((prev) => ({ ...prev, [field]: date }));
     setFormErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
   const handlePastMaintenanceChange = (dates) => {
-    console.log('Past maintenance changed:', dates ? dates.map((d) => d.format('YYYY-MM-DD')) : '[]');
+    console.log('Past maintenance changed:', dates ? dates.map((d) => moment(d).format('YYYY-MM-DD')) : '[]');
     setFormData((prev) => ({ ...prev, pastMaintenance: dates || [] }));
   };
 
-  const disablePastDates = (current) => {
-    return current && current < moment().startOf('day');
+  const disablePastDates = (date) => {
+    //block past dates
+    return date < moment().startOf('day').toDate();
   };
 
   const validateForm = () => {
@@ -129,12 +133,12 @@ export default function Appliances() {
     if (!formData.type) errors.type = 'Type is required';
     if (!formData.warrantyExpiry) {
       errors.warrantyExpiry = 'Warranty expiry is required';
-    } else if (formData.warrantyExpiry.isBefore(moment(), 'day')) {
+    } else if (moment(formData.warrantyExpiry).isBefore(moment(), 'day')) {
       errors.warrantyExpiry = 'Warranty expiry cannot be in the past';
     }
     if (!formData.maintenanceSchedule) {
       errors.maintenanceSchedule = 'Maintenance schedule is required';
-    } else if (formData.maintenanceSchedule.isBefore(moment(), 'day')) {
+    } else if (moment(formData.maintenanceSchedule).isBefore(moment(), 'day')) {
       errors.maintenanceSchedule = 'Maintenance schedule cannot be in the past';
     }
     if (!formData.value || formData.value === '') {
@@ -157,7 +161,7 @@ export default function Appliances() {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      message.error('Please fix the errors in the form.');
+      toast.error('Please fix the errors in the form.');
       return;
     }
 
@@ -165,10 +169,10 @@ export default function Appliances() {
       const payload = {
         name: formData.name,
         type: formData.type,
-        warrantyExpiry: formData.warrantyExpiry.format('YYYY-MM-DD'),
-        maintenanceSchedule: formData.maintenanceSchedule.format('YYYY-MM-DD'),
+        warrantyExpiry: moment(formData.warrantyExpiry).format('YYYY-MM-DD'),
+        maintenanceSchedule: moment(formData.maintenanceSchedule).format('YYYY-MM-DD'),
         value: Number(formData.value),
-        pastMaintenance: formData.pastMaintenance.map((date) => date.format('YYYY-MM-DD')),
+        pastMaintenance: formData.pastMaintenance.map((date) => moment(date).format('YYYY-MM-DD')),
       };
       console.log('Sending payload to backend:', payload);
 
@@ -176,26 +180,26 @@ export default function Appliances() {
         await axios.put(`/api/appliances/${currentAppliance._id}`, payload, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        message.success('Appliance updated successfully.');
+        toast.success('Appliance updated successfully.');
       } else {
         const response = await axios.post('/api/appliances', payload, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         console.log('Add response:', response.data);
-        message.success('Appliance added successfully.');
+        toast.success('Appliance added successfully.');
       }
 
       fetchAppliances();
       setIsModalOpen(false);
     } catch (error) {
       console.error('Submit appliance error:', error.response ? error.response.data : error);
-      message.error(error.response?.data?.message || 'Failed to save appliance');
+      toast.error(error.response?.data?.message || 'Failed to save appliance');
     }
   };
 
   const generatePDF = () => {
     if (appliances.length === 0) {
-      message.warning('No appliances available to generate a report.');
+      toast.warn('No appliances available to generate a report.');
       return;
     }
 
@@ -230,10 +234,10 @@ export default function Appliances() {
       });
 
       doc.save('appliance_report.pdf');
-      message.success('PDF report generated successfully!');
+      toast.success('PDF report generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      message.error('Failed to generate PDF report. Please try again.');
+      toast.error('Failed to generate PDF report. Please try again.');
     }
   };
 
@@ -258,6 +262,19 @@ export default function Appliances() {
 
   return (
     <div className="p-6">
+      {/* Toastify */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Appliance Management</h1>
         <div className="flex space-x-2">
@@ -407,21 +424,29 @@ export default function Appliances() {
             <div>
               <label className="block text-sm font-medium text-gray-700">Warranty Expiry</label>
               <DatePicker
-                value={formData.warrantyExpiry}
+                selected={formData.warrantyExpiry}
                 onChange={(date) => handleDateChange('warrantyExpiry', date)}
-                format="YYYY-MM-DD"
-                disabledDate={disablePastDates}
+                dateFormat="yyyy-MM-dd"
+                filterDate={(date) => !disablePastDates(date)} // Allow today and future dates
                 className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${formErrors.warrantyExpiry ? 'border-red-500' : ''}`}
+                placeholderText="Select warranty expiry"
+                wrapperClassName="w-full"
+                popperClassName="z-50"
+                calendarClassName="bg-white border border-gray-300 rounded-md shadow-lg"
               />
               {formErrors.warrantyExpiry && <p className="text-red-500 text-sm mt-1">{formErrors.warrantyExpiry}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Maintenance Schedule</label>
               <DatePicker
-                value={formData.maintenanceSchedule}
+                selected={formData.maintenanceSchedule}
                 onChange={(date) => handleDateChange('maintenanceSchedule', date)}
-                format="YYYY-MM-DD"
+                dateFormat="yyyy-MM-dd"
                 className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${formErrors.maintenanceSchedule ? 'border-red-500' : ''}`}
+                placeholderText="Select maintenance schedule"
+                wrapperClassName="w-full"
+                popperClassName="z-50"
+                calendarClassName="bg-white border border-gray-300 rounded-md shadow-lg"
               />
               {formErrors.maintenanceSchedule && <p className="text-red-500 text-sm mt-1">{formErrors.maintenanceSchedule}</p>}
             </div>
@@ -439,11 +464,18 @@ export default function Appliances() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Past Maintenance Dates</label>
-              <DatePicker.RangePicker
-                value={formData.pastMaintenance}
+              <DatePicker
+                selectsRange
+                startDate={formData.pastMaintenance[0]}
+                endDate={formData.pastMaintenance[1]}
                 onChange={handlePastMaintenanceChange}
-                format="YYYY-MM-DD"
+                dateFormat="yyyy-MM-dd"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                placeholderText="Select past maintenance dates"
+                wrapperClassName="w-full"
+                popperClassName="z-50"
+                calendarClassName="bg-white border border-gray-300 rounded-md shadow-lg"
+                isClearable
               />
             </div>
             <div className="flex justify-end space-x-2">
