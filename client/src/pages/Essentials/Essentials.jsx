@@ -1,354 +1,402 @@
-import React, { useState, useEffect } from 'react';
-import { Button as AntdButton, Modal as AntdModal, Form, Input, DatePicker, message } from 'antd';
-import { Modal as FlowbiteModal, TextInput, Card, Button as FlowbiteButton } from 'flowbite-react';
-import { HiSearch } from 'react-icons/hi';
-import axios from 'axios';
-import moment from 'moment';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Modal, Button, TextInput, Label, Select, Badge } from "flowbite-react";
+import { HiPlus, HiOutlinePencil, HiOutlineTrash, HiSearch, HiBell } from "react-icons/hi";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-axios.defaults.baseURL = 'http://localhost:8000'; // Backend URL
-axios.defaults.withCredentials = true; // Enable cookies
-
-export default function Essentials() {
+const Essentials = () => {
   const [essentials, setEssentials] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Add/Edit modal
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // Search modal
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [currentEssential, setCurrentEssential] = useState(null);
-  const [form] = Form.useForm();
-  const [searchQuery, setSearchQuery] = useState(''); // Search input state
+  const [formData, setFormData] = useState({
+    itemName: "",
+    noOfItems: "",
+    expiryDate: "",
+    currentPrice: "",
+    type: "Food",
+    description: "",
+  });
+
+  const fetchEssentials = async () => {
+    try {
+      const res = await axios.get("/api/essentials");
+      setEssentials(res.data);
+    } catch (error) {
+      console.error("Error fetching essentials:", error);
+      toast.error("Failed to fetch essentials.");
+    }
+  };
 
   useEffect(() => {
     fetchEssentials();
   }, []);
 
-  const fetchEssentials = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('/api/essentials');
-      setEssentials(response.data || []);
-    } catch (error) {
-      console.error('Fetch essentials error:', error);
-      message.error(error.response?.data?.message || 'Failed to fetch essentials');
-      setEssentials([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAdd = () => {
     setCurrentEssential(null);
-    form.resetFields();
-    setIsModalVisible(true);
+    setFormData({
+      itemName: "",
+      noOfItems: "",
+      expiryDate: "",
+      currentPrice: "",
+      type: "Food",
+      description: "",
+    });
+    setIsModalOpen(true);
   };
 
   const handleEdit = (essential) => {
     setCurrentEssential(essential);
-    form.setFieldsValue({
-      ...essential,
-      expiryDate: moment(essential.expiryDate),
+    setFormData({
+      itemName: essential.itemName,
+      noOfItems: essential.noOfItems,
+      expiryDate: essential.expiryDate.split("T")[0],
+      currentPrice: essential.currentPrice,
+      type: essential.type,
+      description: essential.description || "",
     });
-    setIsModalVisible(true);
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`/api/essentials/${id}`);
-      message.success('Essential item deleted successfully.');
-      fetchEssentials();
-    } catch (error) {
-      console.error('Delete essential error:', error);
-      message.error(error.response?.data?.message || 'Failed to delete essential item');
-    }
-  };
-
-  const handleSubmit = async (values) => {
-    try {
-      const payload = {
-        ...values,
-        expiryDate: values.expiryDate.format('YYYY-MM-DD'),
-      };
-
-      if (currentEssential) {
-        await axios.put(`/api/essentials/${currentEssential._id}`, payload);
-        message.success('Essential item updated successfully.');
-      } else {
-        await axios.post('/api/essentials', payload);
-        message.success('Essential item added successfully.');
+    if (confirm("Are you sure you want to delete this item?")) {
+      try {
+        await axios.delete(`/api/essentials/${id}`);
+        fetchEssentials();
+        toast.success("Essential deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting essential:", error);
+        toast.error("Failed to delete essential.");
       }
-
-      fetchEssentials();
-      setIsModalVisible(false);
-    } catch (error) {
-      console.error('Submit essential error:', error);
-      message.error(error.response?.data?.message || 'Failed to save essential item');
     }
   };
 
-  // Filter essentials based on search query
-  const searchedEssentials = essentials.filter((essential) =>
-    essential.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    essential.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  const validateForm = () => {
+    if (!formData.itemName.trim()) {
+      toast.error("Item name is required.");
+      return false;
+    }
+    if (!formData.noOfItems || formData.noOfItems <= 0) {
+      toast.error("Number of items must be greater than 0.");
+      return false;
+    }
+    if (!formData.expiryDate) {
+      toast.error("Expiry date is required.");
+      return false;
+    }
+    if (!formData.currentPrice || formData.currentPrice <= 0) {
+      toast.error("Current price must be greater than 0.");
+      return false;
+    }
+    if (!formData.type) {
+      toast.error("Type is required.");
+      return false;
+    }
+    if (!formData.description.trim()) {
+      toast.error("Description is required.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    try {
+      if (currentEssential) {
+        await axios.put(`/api/essentials/${currentEssential._id}`, formData);
+        toast.success("Essential updated successfully!");
+      } else {
+        const response = await axios.post("/api/essentials", formData);
+        if (response.status === 201 || response.status === 200) {
+          toast.success("Essential added successfully!");
+        } else {
+          throw new Error("Unexpected response status");
+        }
+      }
+      setIsModalOpen(false);
+      fetchEssentials();
+    } catch (error) {
+      console.error("Error saving essential:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to save essential. Please try again.");
+    }
+  };
+
+  const filteredEssentials = essentials.filter((essential) =>
+    essential.itemName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Generate PDF report
-  const generatePDF = () => {
-    if (essentials.length === 0) {
-      message.warning('No essentials available to generate a report.');
-      return;
-    }
-
-    try {
-      const doc = new jsPDF();
-      doc.setFontSize(18);
-      doc.text('HomeMate - Essentials Report', 14, 20);
-      doc.setFontSize(11);
-      const today = new Date();
-      doc.text(`Generated on: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`, 14, 30);
-      doc.setFontSize(12);
-      doc.text(`Total Essentials: ${essentials.length}`, 14, 40);
-
-      const tableColumn = ['Item Name', 'No. of Items', 'Expiry Date', 'Description', 'Current Price (LKR)'];
-      const tableRows = essentials.map((essential) => [
-        essential.itemName || 'N/A',
-        essential.noOfItems || 'N/A',
-        essential.expiryDate ? moment(essential.expiryDate).format('YYYY-MM-DD') : 'N/A',
-        essential.description || 'N/A',
-        essential.currentPrice ? `LKR ${parseFloat(essential.currentPrice).toFixed(2)}` : 'N/A',
-      ]);
-
-      autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: 50,
-        theme: 'grid',
-        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-      });
-
-      doc.save('essentials_report.pdf');
-      message.success('PDF report generated successfully!');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      message.error('Failed to generate PDF report. Please try again.');
-    }
-  };
+  // Counter Calculations
+  const totalEssentials = essentials.length;
+  const expiredEssentials = essentials.filter(
+    (essential) => new Date(essential.expiryDate) < new Date()
+  );
+  const foodEssentials = essentials.filter((essential) => essential.type === "Food").length;
+  const medicineEssentials = essentials.filter((essential) => essential.type === "Medicine").length;
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Essentials</h1>
-        <div className="flex space-x-2">
-          <AntdButton
-            type="primary"
+    <div className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-colors duration-300">
+      <ToastContainer theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'} />
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Essentials Management</h1>
+          {expiredEssentials.length > 0 && (
+            <button
+              onClick={() => setIsNotificationModalOpen(true)}
+              className="relative text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition"
+            >
+              <HiBell className="w-6 h-6" />
+              <Badge color="failure" className="absolute -top-1 -right-1">{expiredEssentials.length}</Badge>
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <TextInput
+            type="text"
+            placeholder="Search essentials..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            icon={HiSearch}
+            className="w-full sm:w-64 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white"
+          />
+          <Button
+            color="success"
             onClick={handleAdd}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md"
+            className="w-full sm:w-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
           >
-            Add New
-          </AntdButton>
-          <AntdButton
-            type="default"
-            onClick={() => setIsSearchModalOpen(true)}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md"
-          >
-            <HiSearch className="h-5 w-5" />
-          </AntdButton>
-          <FlowbiteButton
-            color="gray"
-            onClick={generatePDF}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md"
-          >
-            Export as PDF
-          </FlowbiteButton>
+            <HiPlus className="mr-2" />
+            Add Essential
+          </Button>
         </div>
       </div>
 
-      {loading ? (
-        <p className="text-gray-600">Loading...</p>
-      ) : essentials.length === 0 ? (
-        <p className="text-gray-600">No essentials available.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {essentials.map((essential) => (
+      {/* Counters */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg text-center shadow-md hover:shadow-lg transition">
+          <h3 className="text-lg font-bold text-blue-800 dark:text-blue-200">Total Essentials</h3>
+          <p className="text-2xl text-blue-900 dark:text-blue-100">{totalEssentials}</p>
+        </div>
+        <div className="bg-red-100 dark:bg-red-900 p-4 rounded-lg text-center shadow-md hover:shadow-lg transition">
+          <h3 className="text-lg font-bold text-red-800 dark:text-red-200">Expired Items</h3>
+          <p className="text-2xl text-red-900 dark:text-red-100">{expiredEssentials.length}</p>
+        </div>
+        <div className="bg-green-100 dark:bg-green-900 p-4 rounded-lg text-center shadow-md hover:shadow-lg transition">
+          <h3 className="text-lg font-bold text-green-800 dark:text-green-200">Food Items</h3>
+          <p className="text-2xl text-green-900 dark:text-green-100">{foodEssentials}</p>
+        </div>
+        <div className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg text-center shadow-md hover:shadow-lg transition">
+          <h3 className="text-lg font-bold text-yellow-800 dark:text-yellow-200">Medicine Items</h3>
+          <p className="text-2xl text-yellow-900 dark:text-yellow-100">{medicineEssentials}</p>
+        </div>
+      </div>
+
+      {/* Essentials Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-h-[750px] overflow-y-auto p-2">
+        {filteredEssentials.length > 0 ? (
+          filteredEssentials.map((essential) => (
             <div
               key={essential._id}
-              className="border border-gray-200 rounded-lg p-4 shadow-md bg-white"
+              className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 flex flex-col justify-between hover:shadow-xl transition-transform transform hover:-translate-y-1"
             >
-              <h2 className="text-xl font-bold text-gray-800">{essential.itemName}</h2>
-              <p className="text-gray-600">No. of Items: {essential.noOfItems}</p>
-              <p className="text-gray-600">
-                Expiry Date: {moment(essential.expiryDate).format('YYYY-MM-DD')}
-              </p>
-              <p className="text-gray-600">Description: {essential.description}</p>
-              <p className="text-gray-600">Current Price: LKR {essential.currentPrice.toFixed(2)}</p>
-              <div className="flex justify-between mt-4">
-                <AntdButton
-                  type="link"
+              <div>
+                <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">{essential.itemName}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                  <strong>Quantity:</strong> {essential.noOfItems}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                  <strong>Expiry:</strong> {essential.expiryDate.split("T")[0]}
+                  {new Date(essential.expiryDate) < new Date() && (
+                    <Badge color="failure" className="ml-2">Expired</Badge>
+                  )}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                  <strong>Price:</strong> Rs. {essential.currentPrice}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                  <strong>Type:</strong> {essential.type}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <strong>Description:</strong> {essential.description}
+                </p>
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <Button
+                  color="warning"
+                  size="xs"
                   onClick={() => handleEdit(essential)}
-                  className="text-blue-500 hover:text-blue-700 font-semibold"
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700"
                 >
-                  Edit
-                </AntdButton>
-                <AntdButton
-                  type="link"
-                  danger
+                  <HiOutlinePencil />
+                </Button>
+                <Button
+                  color="failure"
+                  size="xs"
                   onClick={() => handleDelete(essential._id)}
-                  className="text-red-500 hover:text-red-700 font-semibold"
+                  className="w-full bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
                 >
-                  Delete
-                </AntdButton>
+                  <HiOutlineTrash />
+                </Button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <p className="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">
+            No essentials found.
+          </p>
+        )}
+      </div>
 
-      {/* Add/Edit Modal (Ant Design) */}
-      <AntdModal
-        title={
-          <span className="text-2xl font-bold text-gray-900">
-            {currentEssential ? 'Edit Essential' : 'Add Essential'}
-          </span>
-        }
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        footer={null}
-        className="rounded-lg"
-        styles={{
-          body: {  padding: '1.5rem'  },
-        }}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className="space-y-4"
-        >
-          <Form.Item
-            name="itemName"
-            label={<span className="text-sm font-medium text-gray-700">Item Name</span>}
-            rules={[{ required: true, message: 'Please enter the item name' }]}
-          >
-            <Input
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="noOfItems"
-            label={<span className="text-sm font-medium text-gray-700">Number of Items</span>}
-            rules={[
-              { required: true, message: 'Please enter the number of items' },
-              {
-                validator(_, value) {
-                  const numValue = Number(value);
-                  if (!value || (!isNaN(numValue) && numValue >= 1)) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Number of items must be at least 1'));
-                },
-              },
-            ]}
-          >
-            <Input
-              type="number"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="expiryDate"
-            label={<span className="text-sm font-medium text-gray-700">Expiry Date</span>}
-            rules={[{ required: true, message: 'Please select the expiry date' }]}
-          >
-            <DatePicker
-              format="YYYY-MM-DD"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            label={<span className="text-sm font-medium text-gray-700">Description</span>}
-            rules={[{ required: true, message: 'Please enter a description' }]}
-          >
-            <Input.TextArea
-              rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="currentPrice"
-            label={<span className="text-sm font-medium text-gray-700">Current Price (LKR)</span>}
-            rules={[
-              { required: true, message: 'Please enter the current price' },
-              {
-                validator(_, value) {
-                  if (!value || !isNaN(Number(value))) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Current price must be a number'));
-                },
-              },
-            ]}
-          >
-            <Input
-              type="number"
-              step="0.01"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <AntdButton
-              type="primary"
-              htmlType="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md w-full"
-            >
-              {currentEssential ? 'Update' : 'Add'}
-            </AntdButton>
-          </Form.Item>
-        </Form>
-      </AntdModal>
-
-      {/* Search Modal (Flowbite) */}
-      <FlowbiteModal show={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)}>
-        <FlowbiteModal.Header>Search Essentials</FlowbiteModal.Header>
-        <FlowbiteModal.Body>
-          <TextInput
-            type="text"
-            placeholder="Search by item name or description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-4"
-          />
-          {searchedEssentials.length > 0 ? (
-            <div className="space-y-4">
-              {searchedEssentials.map((essential) => (
-                <Card key={essential._id} className="p-4">
-                  <h3 className="text-lg font-bold text-gray-800">{essential.itemName}</h3>
-                  <p className="text-gray-600"><strong>No. of Items:</strong> {essential.noOfItems}</p>
-                  <p className="text-gray-600"><strong>Expiry Date:</strong> {moment(essential.expiryDate).format('YYYY-MM-DD')}</p>
-                  <p className="text-gray-600"><strong>Description:</strong> {essential.description}</p>
-                  <p className="text-gray-600"><strong>Current Price:</strong> LKR {essential.currentPrice.toFixed(2)}</p>
-                </Card>
-              ))}
+      {/* Add/Edit Modal */}
+      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} className="dark:bg-gray-800">
+        <Modal.Header className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
+          {currentEssential ? "Edit Essential" : "Add Essential"}
+        </Modal.Header>
+        <Modal.Body className="bg-white dark:bg-gray-800">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="itemName" value="Item Name" className="text-gray-900 dark:text-white" />
+              <TextInput
+                id="itemName"
+                name="itemName"
+                type="text"
+                placeholder="Enter item name"
+                value={formData.itemName}
+                onChange={(e) => setFormData({ ...formData, itemName: e.target.value })}
+                required
+                className="bg-gray-50 dark:bg-gray-700 dark:text-white"
+              />
             </div>
+
+            <div>
+              <Label htmlFor="noOfItems" value="Number of Items" className="text-gray-900 dark:text-white" />
+              <TextInput
+                id="noOfItems"
+                name="noOfItems"
+                type="number"
+                placeholder="Enter number of items"
+                value={formData.noOfItems}
+                onChange={(e) => setFormData({ ...formData, noOfItems: e.target.value })}
+                required
+                className="bg-gray-50 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="expiryDate" value="Expiry Date" className="text-gray-900 dark:text-white" />
+              <TextInput
+                id="expiryDate"
+                name="expiryDate"
+                type="date"
+                value={formData.expiryDate}
+                onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                required
+                className="bg-gray-50 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="currentPrice" value="Current Price (LKR)" className="text-gray-900 dark:text-white" />
+              <TextInput
+                id="currentPrice"
+                name="currentPrice"
+                type="number"
+                placeholder="Enter price"
+                value={formData.currentPrice}
+                onChange={(e) => setFormData({ ...formData, currentPrice: e.target.value })}
+                required
+                className="bg-gray-50 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description" value="Description" className="text-gray-900 dark:text-white" />
+              <TextInput
+                id="description"
+                name="description"
+                type="text"
+                placeholder="Enter description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                required
+                className="bg-gray-50 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="type" value="Type" className="text-gray-900 dark:text-white" />
+              <Select
+                id="type"
+                name="type"
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                required
+
+
+                className="bg-gray-50 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="Food">Food</option>
+                <option value="Medicine">Medicine</option>
+                <option value="Cleaning Supplies">Cleaning Supplies</option>
+                <option value="Other">Other</option>
+              </Select>
+            </div>
+
+            <Button
+              type="submit"
+              className="mt-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            >
+              {currentEssential ? "Update" : "Add"} Essential
+            </Button>
+          </form>
+        </Modal.Body>
+      </Modal>
+
+      {/* Notification Modal */}
+      <Modal show={isNotificationModalOpen} onClose={() => setIsNotificationModalOpen(false)} className="dark:bg-gray-800">
+        <Modal.Header className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
+          Expired Essentials
+        </Modal.Header>
+        <Modal.Body className="bg-white dark:bg-gray-800">
+          {expiredEssentials.length > 0 ? (
+            <ul className="flex flex-col gap-4">
+              {expiredEssentials.map((essential) => (
+                <li
+                  key={essential._id}
+                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm"
+                >
+                  <p className="text-gray-900 dark:text-white">
+                    <strong>{essential.itemName}</strong> (Type: {essential.type})
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Expired on: {essential.expiryDate.split("T")[0]}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Quantity: {essential.noOfItems}
+                  </p>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <p className="text-gray-500">No essentials found matching "{searchQuery}"</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center">No expired essentials.</p>
           )}
-        </FlowbiteModal.Body>
-        <FlowbiteModal.Footer>
-          <FlowbiteButton
+        </Modal.Body>
+        <Modal.Footer className="bg-white dark:bg-gray-800">
+          <Button
             color="gray"
-            onClick={() => setIsSearchModalOpen(false)}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md"
+            onClick={() => setIsNotificationModalOpen(false)}
+            className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700"
           >
             Close
-          </FlowbiteButton>
-        </FlowbiteModal.Footer>
-      </FlowbiteModal>
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
-}
+};
+
+export default Essentials;
