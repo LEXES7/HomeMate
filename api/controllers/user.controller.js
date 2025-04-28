@@ -84,3 +84,17 @@ export const signout = (req, res, next) => {
         next(error);
     }
 };
+
+export const getUserProfile = async (req, res, next) => {
+    try {
+      // Ensure `req.user` is populated by the `verifyToken` middleware
+      const user = await User.findById(req.user.id, '-password'); // Exclude the password field
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      console.error('Error in getUserProfile:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };

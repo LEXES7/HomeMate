@@ -14,11 +14,15 @@ export default function DashHome() {
   const [totalAppliances, setTotalAppliances] = useState(0);
   const [totalEssentials, setTotalEssentials] = useState(0);
   const [totalClothing, setTotalClothing] = useState(0);
+  const [username, setUsername] = useState('User'); // Default username fallback
+  const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
     fetchTotalAppliances();
     fetchTotalEssentials();
     fetchTotalClothing();
+    setGreetingBasedOnTime();
+    fetchUsername(); // Fetch the username from the backend
   }, []);
 
   const fetchTotalAppliances = async () => {
@@ -26,7 +30,7 @@ export default function DashHome() {
       const response = await axios.get('/api/appliances', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setTotalAppliances(response.data.length);
+      setTotalAppliances(response.data.length); // Count total appliances
     } catch (error) {
       console.error('Error fetching total appliances:', error);
     }
@@ -37,7 +41,7 @@ export default function DashHome() {
       const response = await axios.get('/api/essentials', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setTotalEssentials(response.data.length); 
+      setTotalEssentials(response.data.length); // Count total essential items
     } catch (error) {
       console.error('Error fetching total essentials:', error);
     }
@@ -48,12 +52,36 @@ export default function DashHome() {
       const response = await axios.get('/api/clothing', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setTotalClothing(response.data.length); 
+      setTotalClothing(response.data.length); // Count total clothing items
     } catch (error) {
       console.error('Error fetching total clothing:', error);
     }
   };
 
+  const fetchUsername = async () => {
+    try {
+      const response = await axios.get('/api/user/profile', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setUsername(response.data.username || 'User'); // Set username from backend response
+    } catch (error) {
+      console.error('Error fetching username:', error);
+      setUsername('User'); // Fallback to default username
+    }
+  };
+
+  const setGreetingBasedOnTime = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      setGreeting('Good Morning');
+    } else if (currentHour < 18) {
+      setGreeting('Good Afternoon');
+    } else {
+      setGreeting('Good Evening');
+    }
+  };
+
+  // Data for the bar chart
   const chartData = {
     labels: ['Appliances', 'Essentials', 'Clothing'],
     datasets: [
@@ -69,6 +97,7 @@ export default function DashHome() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Allow resizing
     plugins: {
       legend: {
         display: true,
@@ -78,10 +107,32 @@ export default function DashHome() {
         enabled: true,
       },
     },
+    scales: {
+      x: {
+        ticks: {
+          color: '#6b7280', // Gray color for x-axis labels
+        },
+      },
+      y: {
+        ticks: {
+          color: '#6b7280', // Gray color for y-axis labels
+        },
+      },
+    },
   };
 
   return (
     <div className="p-6">
+      {/* Greeting Section */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+          {greeting}, {username}!
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          Here's an overview of your items.
+        </p>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <Card className="bg-blue-100 dark:bg-blue-900 shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -122,7 +173,9 @@ export default function DashHome() {
       {/* Bar Chart */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Items Overview</h2>
-        <Bar data={chartData} options={chartOptions} />
+        <div className="h-64"> {/* Adjust height for a smaller chart */}
+          <Bar data={chartData} options={chartOptions} />
+        </div>
       </div>
     </div>
   );
