@@ -49,7 +49,7 @@ export default function UnifiedSidebar() {
       className="h-screen w-full md:w-64 bg-gray-900/95 backdrop-blur-md text-white shadow-lg"
       aria-label="Home Inventory Sidebar"
     >
-      <div className="flex items-center gap-2 p-4 ">
+      <div className="flex items-center gap-2 p-4">
         <span className="text-4xl font-bold text-black hidden md:block dark:text-white">
           Dashboard
         </span>
