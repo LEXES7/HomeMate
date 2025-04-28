@@ -214,7 +214,9 @@ export default function Essentials() {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
         className="rounded-lg"
-        bodyStyle={{ padding: '1.5rem' }}
+        styles={{
+          body: {  padding: '1.5rem'  },
+        }}
       >
         <Form
           form={form}
