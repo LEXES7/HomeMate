@@ -91,8 +91,8 @@ export default function DashHome() {
     setCurrentTime(formattedTime);
   };
 
-//barchart data
-   const chartData = {
+  // Bar chart data
+  const chartData = {
     labels: ['Appliances', 'Essentials', 'Clothing'],
     datasets: [
       {
@@ -132,19 +132,21 @@ export default function DashHome() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Greeting Section */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200">
             {greeting}, {username}!
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             Here's an overview of your items.
           </p>
         </div>
         {/* Display current time */}
-        <p className="text-lg sm:text-xl font-medium text-gray-600 dark:text-gray-400">{currentTime}</p>
+        <p className="mt-2 sm:mt-0 text-base sm:text-lg font-medium text-gray-600 dark:text-gray-400">
+          {currentTime}
+        </p>
       </div>
 
       {/* Summary Cards */}
@@ -152,33 +154,33 @@ export default function DashHome() {
         <Card className="bg-blue-100 dark:bg-blue-900 shadow-md hover:shadow-lg transition-shadow duration-300">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-blue-200 dark:bg-blue-800 rounded-full">
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-300">A</span>
+              <span className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-300">A</span>
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-semibold">Total Appliances</h3>
-              <p className="text-xl sm:text-2xl font-bold">{totalAppliances}</p>
+              <h3 className="text-sm sm:text-base font-semibold">Total Appliances</h3>
+              <p className="text-lg sm:text-xl font-bold">{totalAppliances}</p>
             </div>
           </div>
         </Card>
         <Card className="bg-green-100 dark:bg-green-900 shadow-md hover:shadow-lg transition-shadow duration-300">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-green-200 dark:bg-green-800 rounded-full">
-              <span className="text-2xl font-bold text-green-600 dark:text-green-300">E</span>
+              <span className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-300">E</span>
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-semibold">Total Essentials</h3>
-              <p className="text-xl sm:text-2xl font-bold">{totalEssentials}</p>
+              <h3 className="text-sm sm:text-base font-semibold">Total Essentials</h3>
+              <p className="text-lg sm:text-xl font-bold">{totalEssentials}</p>
             </div>
           </div>
         </Card>
         <Card className="bg-purple-100 dark:bg-purple-900 shadow-md hover:shadow-lg transition-shadow duration-300">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-purple-200 dark:bg-purple-800 rounded-full">
-              <span className="text-2xl font-bold text-purple-600 dark:text-purple-300">C</span>
+              <span className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-300">C</span>
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-semibold">Total Clothing</h3>
-              <p className="text-xl sm:text-2xl font-bold">{totalClothing}</p>
+              <h3 className="text-sm sm:text-base font-semibold">Total Clothing</h3>
+              <p className="text-lg sm:text-xl font-bold">{totalClothing}</p>
             </div>
           </div>
         </Card>
@@ -186,8 +188,8 @@ export default function DashHome() {
 
       {/* Bar Chart */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Items Overview</h2>
-        <div className="h-96"> 
+        <h2 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Items Overview</h2>
+        <div className="h-64 sm:h-96"> 
           <Bar data={chartData} options={chartOptions} />
         </div>
       </div>
