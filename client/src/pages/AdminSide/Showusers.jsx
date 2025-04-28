@@ -5,6 +5,7 @@ import { HiOutlineUsers, HiOutlineUser, HiOutlineShieldCheck, HiTrash } from 're
 
 export default function ShowUsers() {
   const [users, setUsers] = useState([]);
+  const [currentTime, setCurrentTime] = useState(''); // State for current time
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   const { theme } = useSelector((state) => state.theme); // Get the current theme from Redux
 
@@ -33,16 +34,30 @@ export default function ShowUsers() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/user/delete/${userId}`, {
         method: 'DELETE',
-        credentials: 'include', 
+        credentials: 'include',
       });
       if (!res.ok) {
         throw new Error('Failed to delete user');
       }
-      setUsers(users.filter((user) => user._id !== userId)); 
+      setUsers(users.filter((user) => user._id !== userId));
     } catch (error) {
       console.error('Error deleting user:', error);
     }
   };
+
+  // Update current time every second
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setCurrentTime(formattedTime);
+    };
+
+    updateTime(); // Set the initial time
+    const interval = setInterval(updateTime, 1000); // Update time every second
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, []);
 
   const totalUsers = users.length;
   const totalAdmins = users.filter((user) => user.isAdmin).length;
@@ -55,7 +70,11 @@ export default function ShowUsers() {
       }`}
     >
       {/* Header */}
-      <h1 className="text-2xl sm:text-3xl font-extrabold mb-6 sm:mb-8">Registered Users</h1>
+      <div className="flex justify-between items-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-extrabold">Registered Users</h1>
+        {/* Display current time */}
+        <p className="text-lg sm:text-xl font-medium text-gray-600 dark:text-gray-400">{currentTime}</p>
+      </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
