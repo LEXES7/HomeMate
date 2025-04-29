@@ -259,7 +259,27 @@ export default function UnifiedSidebar() {
               >
                 Manage Users
               </Sidebar.Item>
+
+
+              <Sidebar.Item
+                icon={HiOutlineUsers}
+                as={Link}
+                to="/admin?tab=adminhome"
+                active={activeTab === 'adminhome'}
+                className={`${
+                  activeTab === 'adminhome'
+                    ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
+                    : 'text-black font-semibold'
+                } rounded-lg transition-colors`}
+                aria-label="admin home"
+              >
+                Home
+              </Sidebar.Item>
+
             </motion.div>
+
+
+
           )}
 
           {/* Sign Out */}

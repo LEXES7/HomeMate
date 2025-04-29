@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import UnifiedSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile';
 import ShowUsers from '../pages/AdminSide/Showusers'; 
+import AdminDashHome from '../pages/AdminDashHome';
 
 export default function AdminDashboard() {
   const location = useLocation();
@@ -24,6 +25,8 @@ export default function AdminDashboard() {
         {/* Render content based on the tab */}
         {tab === 'profile' && <DashProfile />}
         {tab === 'users' && <ShowUsers />}
+        {tab === 'adminhome' && <AdminDashHome />}
+        
       </div>
     </div>
   );
