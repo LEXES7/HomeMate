@@ -248,22 +248,6 @@ export default function UnifiedSidebar() {
               <Sidebar.Item
                 icon={HiOutlineUsers}
                 as={Link}
-                to="/admin?tab=users"
-                active={activeTab === 'users'}
-                className={`${
-                  activeTab === 'users'
-                    ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
-                    : 'text-black font-semibold'
-                } rounded-lg transition-colors`}
-                aria-label="Manage users"
-              >
-                Manage Users
-              </Sidebar.Item>
-
-
-              <Sidebar.Item
-                icon={HiOutlineUsers}
-                as={Link}
                 to="/admin?tab=adminhome"
                 active={activeTab === 'adminhome'}
                 className={`${
@@ -274,6 +258,21 @@ export default function UnifiedSidebar() {
                 aria-label="admin home"
               >
                 Home
+              </Sidebar.Item>
+              
+              <Sidebar.Item
+                icon={HiOutlineUsers}
+                as={Link}
+                to="/admin?tab=users"
+                active={activeTab === 'users'}
+                className={`${
+                  activeTab === 'users'
+                    ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
+                    : 'text-black font-semibold'
+                } rounded-lg transition-colors`}
+                aria-label="Manage users"
+              >
+                Manage Users
               </Sidebar.Item>
 
             </motion.div>
