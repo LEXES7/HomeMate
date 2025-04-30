@@ -40,7 +40,7 @@ export default function Signin() {
         if (data.isAdmin) {
           navigate('/admin'); // Redirect to admin dashboard
         } else {
-          navigate('/dashboard?tab=profile'); // Redirect to user dashboard
+          navigate('/dashboard?tab=dhome'); // Redirect to user dashboard
         }
       }
     } catch (error) {
