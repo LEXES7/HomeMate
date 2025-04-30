@@ -1,4 +1,5 @@
-*HomeMate is an Smart Home Inventory System*
+**HomeMate is an Smart Home Inventory System**
+
 Overview
 HomeMate is a full stack home inventory management system built using the MERN stack (MongoDB, Express.js, React, Node.js). It provides an intuitive and efficient solution for users to track, organize, and manage household items. Whether you're keeping tabs on groceries, appliances, or personal belongings, HomeMate simplifies inventory management with a user friendly interface and robust backend.
 Features
@@ -17,11 +18,10 @@ Tech Stack
 Frontend: React, Tailwind CSS
 Backend: Node.js, Express.js.sorted-items {display: flex;flex-wrap: wrap;gap: 1rem;justify-content: center;}
 Database: MongoDB
-Authentication: JSON Web Tokens (JWT)
-Deployment: [Specify your deployment platform, e.g., Heroku, Vercel, or AWS]
+Authentication: Firebase, JSON Web Tokens (JWT)
 
-Installation
-Prerequisites
+**Installation
+Prerequisites**
 
 Node.js (v16 or higher)
 MongoDB 
@@ -31,7 +31,6 @@ Steps
 
 Clone the Repository:
 git clone https://github.com/LEXES7/HomeMate.git
-cd homemate
 
 
 Install Dependencies:
