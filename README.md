@@ -1,6 +1,6 @@
-HomeMate - Home Inventory System
+*HomeMate is an Smart Home Inventory System*
 Overview
-HomeMate is a full-stack home inventory management system built using the MERN stack (MongoDB, Express.js, React, Node.js). It provides an intuitive and efficient solution for users to track, organize, and manage household items. Whether you're keeping tabs on groceries, appliances, or personal belongings, HomeMate simplifies inventory management with a user-friendly interface and robust backend.
+HomeMate is a full stack home inventory management system built using the MERN stack (MongoDB, Express.js, React, Node.js). It provides an intuitive and efficient solution for users to track, organize, and manage household items. Whether you're keeping tabs on groceries, appliances, or personal belongings, HomeMate simplifies inventory management with a user friendly interface and robust backend.
 Features
 
 Item Management: Add, update, delete, and categorize household items with ease.
@@ -9,6 +9,8 @@ User Authentication: Secure user login and registration with firebase google OAU
 Responsive Design: Seamlessly works on desktops, tablets, and mobile devices.
 Cloud Storage: Store and manage item data securely with MongoDB.
 Real-Time Updates: Instantly reflect changes across the application.
+AI Assistance for user recommendations 
+Admin, User functionalities
 
 Tech Stack
 
@@ -55,16 +57,16 @@ npm start
 The application should now be running at http://localhost:3000 (frontend) and http://localhost:8000 (backend).
 
 
-Fork the repository.
+*Fork the repository.
 Create a new branch (git checkout -b feature/your-feature).
 Commit your changes (git commit -m "Add your feature").
 Push to the branch (git push origin feature/your-feature).
-Open a Pull Request.
+Open a Pull Request.*
 
 Please ensure your code follows the project's coding standards and includes relevant tests.
 License
 This project is licensed under the MIT License. See the LICENSE file for details.
 Contact
-For questions or feedback, please reach out to your-email@example.com or open an issue on GitHub.
+For questions or feedback, please reach out to Sachinthabhashitha245@gmail.com or open an issue on GitHub.
 
 Thank you for using HomeMate! We hope it simplifies your home inventory management.
