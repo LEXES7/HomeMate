@@ -5,6 +5,8 @@ import feature1Image from '../assets/image1.jpg';
 import feature2Image from '../assets/image2.jpg';
 import feature3Image from '../assets/image3.jpg';
 import feature4Image from '../assets/image3.jpg';
+import bgImage from "../assets/bg1.jpg";
+import bg2Image from "../assets/bg2.jpg"; // Import background image for testimonial section
 
 const features = [
   {
@@ -36,6 +38,7 @@ const features = [
 
 export default function Home() {
   const scrollRef = useRef(null);
+  const testimonialRef = useRef(null); // Add ref for testimonial section
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
@@ -58,12 +61,37 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Add scroll animation effect for testimonial
+  useEffect(() => {
+    const testimonialSection = testimonialRef.current;
+    if (!testimonialSection) return;
+
+    const handleScroll = () => {
+      const rect = testimonialSection.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+      
+      if (isVisible) {
+        const scrollPosition = window.innerHeight - rect.top;
+        const opacity = Math.min(1, scrollPosition / 500); // Fade in effect
+        const scale = 0.9 + Math.min(0.1, scrollPosition / 1000); // Slight scale effect
+        const translateY = Math.max(0, 50 - scrollPosition / 10); // Move up effect
+        
+        testimonialSection.style.opacity = opacity;
+        testimonialSection.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="w-full">
       {/* Hero Section */}
       <div className="relative w-full h-[80vh]">
-     
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+        <div className="absolute inset-0 bg-gradient- bg-gray-900/95"></div>
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             Simplify Your <span className="bg-gradient-to-r from-[#A41FCD] to-[#FC9497] bg-clip-text text-transparent">Inventory</span> Management
@@ -85,14 +113,25 @@ export default function Home() {
       </div>
 
       {/* Testimonial Section */}
-      <div className="w-full bg-gray-100 py-12 px-6 text-center">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-lg md:text-xl italic text-gray-800 mb-4">
-            “This app saved us hours managing our stock! It’s intuitive and perfect for our small business.”
-          </p>
-          <p className="text-right text-gray-600">- Sarah, Small Business Owner</p>
-        </div>
-      </div>
+<div 
+  ref={testimonialRef}
+  className="w-full py-32 px-6 text-center relative bg-cover bg-center bg-fixed overflow-hidden transition-all duration-700 opacity-0 min-h-[500px] flex items-center"
+  style={{
+    backgroundImage: `url(${bg2Image})`,
+    transform: 'scale(0.9) translateY(50px)',
+  }}
+>
+  <div className="absolute inset-0 bg-black/60"></div>
+  <div className="max-w-4xl mx-auto relative z-10 w-full">
+    <div className="bg-white/10 backdrop-blur-sm p-10 rounded-xl shadow-2xl">
+      <p className="text-2xl md:text-3xl italic text-white mb-8 font-light leading-relaxed">
+        "This app saved us hours managing our stock! It's intuitive and perfect for our small business."
+      </p>
+      <div className="w-16 h-1 bg-gradient-to-r from-[#A41FCD] to-[#FC9497] mx-auto mb-6"></div>
+      <p className="text-white text-lg">- Sarah, Small Business Owner</p>
+    </div>
+  </div>
+</div>
 
       {/* Features Section */}
       <div className="w-full bg-gray-900 py-12">
