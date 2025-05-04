@@ -40,7 +40,7 @@ export default function Appliances() {
     pastMaintenance: [],
   });
   const [formErrors, setFormErrors] = useState({});
-  const [modalSearchQuery, setModalSearchQuery] = useState(''); // For popup search
+  const [modalSearchQuery, setModalSearchQuery] = useState(''); 
 
   useEffect(() => {
     fetchAppliances();
@@ -107,8 +107,29 @@ export default function Appliances() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     console.log(`Input changed: ${name} = ${value}`);
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    
+    if (name === 'name') {
+      // For name field, check if it contains numbers
+      if (/\d/.test(value)) {
+        setFormErrors((prev) => ({ ...prev, [name]: 'Name cannot contain numbers' }));
+        return; // Stop processing if contains numbers
+      }
+      // Clear errors and update the name field normally
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    } else if (name === 'value') {
+
+      if (value === '' || !isNaN(Number(value.replace(/[^0-9.]/g, '')))) {
+        setFormData((prev) => ({ ...prev, [name]: value.replace(/[^0-9.]/g, '') }));
+        setFormErrors((prev) => ({ ...prev, [name]: '' }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, [name]: 'Value can only contain numbers' }));
+      }
+    } else {
+      // Default behavior for other fields 
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleDateChange = (field, date) => {
@@ -123,7 +144,6 @@ export default function Appliances() {
   };
 
   const disablePastDates = (date) => {
-    //block past dates
     return date < moment().startOf('day').toDate();
   };
 
@@ -202,17 +222,73 @@ export default function Appliances() {
       toast.warn('No appliances available to generate a report.');
       return;
     }
-
+  
     try {
       const doc = new jsPDF();
-      doc.setFontSize(18);
+      
+      // Blue header box
+      doc.setFillColor(41, 128, 185); // Royal blue color
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      // Title text in white
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
       doc.text('HomeMate - Appliance Report', 14, 20);
-      doc.setFontSize(11);
+      
+      // Subtitle in white
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
       const today = new Date();
       doc.text(`Generated on: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`, 14, 30);
+      
+      // Reset text color for the rest of the document
+      doc.setTextColor(0, 0, 0);
+      
+      // Summary section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Summary', 14, 50);
       doc.setFontSize(12);
-      doc.text(`Total Appliances: ${appliances.length}`, 14, 40);
-
+      doc.setFont('helvetica', 'normal');
+      
+      doc.setDrawColor(41, 128, 185); // Blue border
+      doc.setLineWidth(0.5);
+      
+      // Total appliances box
+      doc.roundedRect(14, 55, 85, 20, 2, 2, 'S');
+      doc.text(`Total Appliances: ${appliances.length}`, 20, 67);
+      
+      // Upcoming maintenance box
+      const upcomingMaintenance = appliances.filter((appliance) =>
+        moment(appliance.maintenanceSchedule).isAfter(moment())
+      ).length;
+      doc.roundedRect(110, 55, 85, 20, 2, 2, 'S');
+      doc.text(`Upcoming Maintenance: ${upcomingMaintenance}`, 115, 67);
+      
+      // Important maintenance box
+      const importantMaintenance = appliances.filter((appliance) =>
+        moment(appliance.maintenanceSchedule).isSameOrBefore(moment())
+      ).length;
+      doc.roundedRect(14, 80, 85, 20, 2, 2, 'S');
+      doc.text(`Important Maintenance: ${importantMaintenance}`, 20, 92);
+      
+      // Notifications box
+      const notifications = appliances.filter(
+        (appliance) =>
+          moment(appliance.warrantyExpiry).isSameOrBefore(moment()) ||
+          moment(appliance.maintenanceSchedule).isSameOrBefore(moment())
+      );
+      doc.roundedRect(110, 80, 85, 20, 2, 2, 'S');
+      doc.text(`Notifications: ${notifications.length}`, 115, 92);
+  
+      // Table title
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Appliance Inventory Details', 14, 110);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+  
       const tableColumn = ['Name', 'Type', 'Warranty Expiry', 'Maintenance Schedule', 'Value (LKR)', 'Past Maintenance'];
       const tableRows = appliances.map((appliance) => [
         appliance.name || 'N/A',
@@ -224,24 +300,64 @@ export default function Appliances() {
           ? appliance.pastMaintenance.map((date) => moment(date).format('YYYY-MM-DD')).join(', ')
           : 'No records',
       ]);
-
+  
+      let finalY; // To track where the table ends
+  
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
-        startY: 65,
+        startY: 115,
         theme: 'grid',
-        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+        headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [240, 240, 240] },
+        didDrawPage: (data) => {
+          finalY = data.cursor.y; // Capture where the table ends
+        }
       });
-
-      doc.save('appliance_report.pdf');
+  
+      // Add signature section
+      const signatureY = finalY + 20; // 20mm below the table
+      
+      doc.setDrawColor(100, 100, 100); // Gray color for signature line
+      
+      // Prepared by
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Prepared by:', 14, signatureY);
+      doc.setFont('helvetica', 'normal');
+      doc.line(14, signatureY + 15, 80, signatureY + 15); // Signature line
+      doc.text('Name and Designation', 14, signatureY + 20);
+      
+      // Authorized by
+      doc.setFont('helvetica', 'bold');
+      doc.text('Authorized by:', 120, signatureY);
+      doc.setFont('helvetica', 'normal');
+      doc.line(120, signatureY + 15, 186, signatureY + 15); // Signature line
+      doc.text('Name and Designation', 120, signatureY + 20);
+      
+      // Date
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date:', 14, signatureY + 35);
+      doc.setFont('helvetica', 'normal');
+      doc.line(30, signatureY + 35, 80, signatureY + 35); // Date line
+      
+      // Footer with page numbers
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100); // Gray text
+        doc.text(`Page ${i} of ${pageCount}`, 190, 285, { align: 'right' });
+        doc.text('Generated by HomeMate Appliance Manager', 14, 285);
+      }
+  
+      doc.save(`appliance_report_${moment().format('YYYY-MM-DD')}.pdf`);
       toast.success('PDF report generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error('Failed to generate PDF report. Please try again.');
     }
   };
-
-  // Filter appliances for modal search
   const searchedAppliances = appliances.filter((appliance) =>
     appliance.name.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
     appliance.type.toLowerCase().includes(modalSearchQuery.toLowerCase())
@@ -262,7 +378,6 @@ export default function Appliances() {
 
   return (
     <div className="p-6">
-      {/* Toastify */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -316,8 +431,8 @@ export default function Appliances() {
 
           <div className="flex justify-end mb-4">
             <Button color="gray" onClick={generatePDF}>
-              Export as PDF
-            </Button>
+Generate Report            
+</Button>
           </div>
 
           <Table hoverable>
@@ -362,7 +477,6 @@ export default function Appliances() {
         </>
       )}
 
-      {/* Notifications Modal */}
       <FlowbiteModal show={isNotificationModalOpen} onClose={() => setIsNotificationModalOpen(false)}>
         <FlowbiteModal.Header>Notifications</FlowbiteModal.Header>
         <FlowbiteModal.Body>
@@ -388,7 +502,6 @@ export default function Appliances() {
         </FlowbiteModal.Footer>
       </FlowbiteModal>
 
-      {/* Add/Edit Modal */}
       <FlowbiteModal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <FlowbiteModal.Header>{currentAppliance ? 'Edit Appliance' : 'Add Appliance'}</FlowbiteModal.Header>
         <FlowbiteModal.Body>
@@ -427,7 +540,7 @@ export default function Appliances() {
                 selected={formData.warrantyExpiry}
                 onChange={(date) => handleDateChange('warrantyExpiry', date)}
                 dateFormat="yyyy-MM-dd"
-                filterDate={(date) => !disablePastDates(date)} // Allow today and future dates
+                filterDate={(date) => !disablePastDates(date)}
                 className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${formErrors.warrantyExpiry ? 'border-red-500' : ''}`}
                 placeholderText="Select warranty expiry"
                 wrapperClassName="w-full"
@@ -442,6 +555,7 @@ export default function Appliances() {
                 selected={formData.maintenanceSchedule}
                 onChange={(date) => handleDateChange('maintenanceSchedule', date)}
                 dateFormat="yyyy-MM-dd"
+                filterDate={(date) => !disablePastDates(date)}
                 className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${formErrors.maintenanceSchedule ? 'border-red-500' : ''}`}
                 placeholderText="Select maintenance schedule"
                 wrapperClassName="w-full"
@@ -453,11 +567,10 @@ export default function Appliances() {
             <div>
               <label className="block text-sm font-medium text-gray-700">Value (LKR)</label>
               <input
-                type="number"
+                type="text"
                 name="value"
                 value={formData.value}
                 onChange={handleInputChange}
-                step="0.01"
                 className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${formErrors.value ? 'border-red-500' : ''}`}
               />
               {formErrors.value && <p className="text-red-500 text-sm mt-1">{formErrors.value}</p>}
@@ -490,7 +603,6 @@ export default function Appliances() {
         </FlowbiteModal.Body>
       </FlowbiteModal>
 
-      {/* Search Modal */}
       <FlowbiteModal show={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)}>
         <FlowbiteModal.Header>Search Appliances</FlowbiteModal.Header>
         <FlowbiteModal.Body>

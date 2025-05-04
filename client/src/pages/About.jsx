@@ -2,13 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Card } from 'flowbite-react';
 import { motion } from 'framer-motion';
-import teamPlaceholder from '../assets/mem.jpg';
+import teamPlaceholder1 from '../assets/s.jpeg';
+import teamPlaceholder2 from '../assets/t.jpeg';
+import teamPlaceholder3 from '../assets/k.png';
+import teamPlaceholder4 from '../assets/n.jpeg';
 
 const teamMembers = [
-  { name: 'Sachintha Bhashitha', role: 'Lead Developer', image: teamPlaceholder },
-  { name: 'Thiyaana Vidanaarachchi', role: 'UI/UX Designer', image: teamPlaceholder },
-  { name: 'Kaveesha', role: 'Backend Developer', image: teamPlaceholder },
-  { name: 'Naveen Gunasekara', role: 'Project Manager', image: teamPlaceholder },
+  { name: 'Sachintha Bhashitha', role: 'Lead Developer', image: teamPlaceholder1 },
+  { name: 'Thiyaana Vidanaarachchi', role: 'UI/UX Designer', image: teamPlaceholder2 },
+  { name: 'Kaveesha', role: 'Backend Developer', image: teamPlaceholder3 },
+  { name: 'Naveen Gunasekara', role: 'Project Manager', image: teamPlaceholder4 },
 ];
 
 export default function AboutPage() {

@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge, Button, Card } from 'flowbite-react';
 import { motion } from 'framer-motion';
-import feature1Image from '../assets/image1.jpg'; 
-import feature2Image from '../assets/image2.jpg';
-import feature3Image from '../assets/image3.jpg';
-import feature4Image from '../assets/image3.jpg';
+import feature1Image from '../assets/realtime.jpg'; 
+import feature2Image from '../assets/notifi.jpg';
+import feature3Image from '../assets/ai.jpg';
+import feature4Image from '../assets/report.jpg';
 
 
 const features = [
@@ -22,12 +22,12 @@ const features = [
   {
     title: 'AI Assistant',
     description: 'Get personalized recommendations and insights based on your inventory data.',
-    image: feature1Image,
+    image: feature3Image,
   },
   {
     title: 'Detailed Reports',
     description: 'Generate customizable reports to gain insights into your inventory performance.',
-    image: feature3Image,
+    image: feature4Image,
   },
   {
     title: 'Team Collaboration',
@@ -76,9 +76,15 @@ export default function FeaturesPage() {
             >
               <Card
                 className="bg-gray-800 border-none shadow-lg hover:shadow-xl transition-transform duration-300 hover:scale-105"
-                imgSrc={feature.image}
                 imgAlt={feature.title}
               >
+                <div className="w-full h-48 overflow-hidden">
+                  <img 
+                    src={feature.image} 
+                    alt={feature.title}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
                 <h3 className="text-2xl font-bold text-white mb-3">{feature.title.toUpperCase()}</h3>
                 <Badge color="purple" className="mb-4">
                   Inventory Feature

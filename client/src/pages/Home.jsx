@@ -189,16 +189,22 @@ export default function Home() {
         </svg>
       </div>
 
-      {/* Final CTA Section */}
-      <div className="w-full bg-gradient-to-r from-[#A41FCD] to-[#FC9497] py-12 px-4 text-center text-white">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Take Control of Your Inventory?</h2>
-        <p className="text-lg mb-6">Join thousands of small businesses managing their stock effortlessly.</p>
-        <Link to="/signup">
-          <Button color="dark" size="xl" className="hover:bg-gray-800">
-            Start Free Trial
-          </Button>
-        </Link>
-      </div>
+     {/* Final CTA Section */}
+<div className="w-full h-122 bg-gradient-to-r from-[#A41FCD] to-[#FC9497] py-12 px-4 text-center text-white">
+  <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Take Control of Your Inventory?</h2>
+  <p className="text-lg mb-8">Join thousands of small businesses managing their stock effortlessly.</p>
+  <div className="flex justify-center">
+    <Link to="/signup">
+      <Button 
+        color="dark" 
+        size="xl" 
+        className="hover:bg-gray-800 py-3 px-10 text-lg font-medium"
+      >
+        Start Free Trial
+      </Button>
+    </Link>
+  </div>
+</div>
 
       {/* Video Section */}
       <div className="w-full py-12 px-4 bg-white text-center">
