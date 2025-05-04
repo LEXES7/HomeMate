@@ -67,7 +67,7 @@ export default function Header() {
           className="h-8 sm:h-10 w-auto transition-transform duration-300 hover:scale-105"
         />
         <span className="text-white text-xl font-bold tracking-tight hidden md:block">
-          Home Inventory
+          HomeMate
         </span>
       </Link>
 
