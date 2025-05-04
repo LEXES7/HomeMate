@@ -77,7 +77,7 @@ export default function Review() {
     try {
       await axios.post('/api/reviews', formData);
       setSuccess(true);
-      toast.success('Thank you for your review! It will be visible after approval.');
+      toast.success('Thank you for your review!');
       
       // Reset form
       setFormData({
@@ -158,7 +158,7 @@ export default function Review() {
           
           {success && (
             <Alert color="success" className="mb-4">
-              Thank you for your review! It will be visible after approval.
+              Thank you for your review!
             </Alert>
           )}
           

@@ -382,15 +382,15 @@ doc.line(150, signatureY + 2, 190, signatureY + 2);
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-lg transform transition duration-300 hover:scale-105">
-          <h2 className="text-lg font-bold">Decoration Items</h2>
+          <h2 className="text-lg font-bold">fruits</h2>
           <p>Total: {totals.decorations}</p>
         </Card>
         <Card className="bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg transform transition duration-300 hover:scale-105">
-          <h2 className="text-lg font-bold">Music Items</h2>
+          <h2 className="text-lg font-bold">vegetables</h2>
           <p>Total: {totals.music}</p>
         </Card>
         <Card className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white shadow-lg transform transition duration-300 hover:scale-105">
-          <h2 className="text-lg font-bold">Game Items</h2>
+          <h2 className="text-lg font-bold">snacks</h2>
           <p>Total: {totals.games}</p>
         </Card>
         <Card className="bg-gradient-to-r from-purple-400 to-purple-600 text-white shadow-lg transform transition duration-300 hover:scale-105">
