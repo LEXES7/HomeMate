@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge, Button, Carousel } from 'flowbite-react';
-import feature1Image from '../assets/image1.jpg'; 
-import feature2Image from '../assets/image2.jpg';
-import feature3Image from '../assets/image3.jpg';
-import feature4Image from '../assets/image3.jpg';
+import feature1Image from '../assets/realtime.jpg'; 
+import feature2Image from '../assets/notifi.jpg';
+import feature3Image from '../assets/ai.jpg';
+import feature4Image from '../assets/report.jpg';
 import bgImage from "../assets/bg1.jpg";
 import bg2Image from "../assets/bg2.jpg"; // Import background image for testimonial section
 
@@ -22,18 +22,14 @@ const features = [
   {
     title: 'AI Assistant',
     description: 'Get personalized recommendations and insights based on your inventory data.',
-    image: feature1Image,
+    image: feature3Image,
   },
   {
     title: 'Detailed Reports',
     description: 'Generate customizable reports to gain insights into your inventory performance.',
-    image: feature3Image,
-  },
-  {
-    title: 'Team Collaboration',
-    description: 'Enable your team to manage inventory together with role-based access.',
     image: feature4Image,
   },
+
 ];
 
 export default function Home() {
