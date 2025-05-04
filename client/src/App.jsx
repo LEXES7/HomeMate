@@ -10,6 +10,7 @@ import Headers from './components/Header';
 import Features from './pages/Features';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
+import Review from './pages/Review';
 
 export default function App() {
   return (
@@ -19,6 +20,9 @@ export default function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/review" element={<Review />} />
+        
+        {/* Public route for the dashboard */}
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} /> {/* Dashboard route */}
         </Route>

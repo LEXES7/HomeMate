@@ -18,9 +18,6 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
-
-
-
   
   const handleSearch = (e) => {
     e.preventDefault();
@@ -57,11 +54,11 @@ export default function Header() {
 
   return (
     <Navbar
-  className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-    theme === 'dark' ? 'bg-gray-900/95' : 'bg-gradient-to-r from-[#EA8973] via-[#C66E9F] to-[#9F52CE]'
-  }`}
-  fluid
->
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        theme === 'dark' ? 'bg-gray-900/95' : 'bg-gradient-to-r from-[#EA8973] via-[#C66E9F] to-[#9F52CE]'
+      }`}
+      fluid
+    >
       {/* Logo */}
       <Link to="/home" className="flex items-center gap-3">
         <img
@@ -76,7 +73,7 @@ export default function Header() {
 
 
       <Navbar.Collapse className="mx-auto">
-        {['home', 'features', 'about'].map((item) => (
+        {['home', 'features', 'about', 'review'].map((item) => (
           <motion.div
             key={item}
             variants={linkVariants}

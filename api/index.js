@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.route.js';
 import applianceRoutes from './routes/appliance.routes.js';
 import essentialsRoutes from './routes/essentials.routes.js';
 import clothingRoutes from './routes/clothing.routes.js';
+import reviewRoutes from './routes/review.route.js';
 
 
 
@@ -52,6 +53,7 @@ app.use('/api/appliances', applianceRoutes);
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/essentials', essentialsRoutes);
 app.use('/api/clothing', clothingRoutes); 
+app.use('/api/reviews', reviewRoutes);
 
 
 app.use('/api/pantry', pantryRoutes);

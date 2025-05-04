@@ -4,6 +4,8 @@ import UnifiedSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile';
 import ShowUsers from '../pages/AdminSide/Showusers'; 
 import AdminDashHome from '../pages/AdminDashHome';
+import AReviews from '../pages/AdminSide/AReviews';
+
 
 export default function AdminDashboard() {
   const location = useLocation();
@@ -26,6 +28,8 @@ export default function AdminDashboard() {
         {tab === 'profile' && <DashProfile />}
         {tab === 'users' && <ShowUsers />}
         {tab === 'adminhome' && <AdminDashHome />}
+        {tab === 'reviews' && <AReviews />}
+
         
       </div>
     </div>

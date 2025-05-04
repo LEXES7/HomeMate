@@ -8,6 +8,7 @@ import {
   HiOutlineCube,
   HiOutlineTag, 
   HiOutlineShoppingBag,
+  HiOutlineStar,
 } from 'react-icons/hi';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -274,6 +275,21 @@ export default function UnifiedSidebar() {
               >
                 Manage Users
               </Sidebar.Item>
+
+              <Sidebar.Item
+        icon={HiOutlineStar}
+        as={Link}
+        to="/admin?tab=reviews"
+        active={activeTab === 'reviews'}
+        className={`${
+          activeTab === 'reviews'
+            ? 'bg-gradient-to-r from-[#A41FCD] to-[#FC9497] text-white'
+            : 'text-black font-semibold'
+        } rounded-lg transition-colors`}
+        aria-label="Manage reviews"
+      >
+        Manage Reviews
+      </Sidebar.Item>
 
             </motion.div>
 
