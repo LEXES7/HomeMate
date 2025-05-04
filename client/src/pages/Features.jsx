@@ -94,18 +94,7 @@ export default function FeaturesPage() {
             </motion.div>
           ))}
         </motion.div>
-
-        <div className="text-center mt-12 ">
-          <Link to="/signup">
-            <Button
-              gradientDuoTone="purpleToPink"
-              size="lg"
-              className="rounded-full px-8 py-3 font-semibold shadow-lg"
-            >
-              Start Free Trial
-            </Button>
-          </Link>
-        </div>
+        
       </div>
     </div>
   );
